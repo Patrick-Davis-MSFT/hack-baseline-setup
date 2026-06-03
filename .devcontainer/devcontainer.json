@@ -18,6 +18,6 @@
       }
     }
   },
-  "postCreateCommand": "az version && azd version && pwsh -v",
+  "postCreateCommand": "python3 --version && az version && azd version && pwsh -v",
   "remoteUser": "vscode"
 }
