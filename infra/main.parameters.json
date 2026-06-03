@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "nameSuffix": {
-      "value": "wksp001"
+      "value": "wkshop"
     },
     "searchSku": {
       "value": "standard"
