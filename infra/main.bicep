@@ -25,6 +25,9 @@ var foundryProjectName = 'proj-${nameSuffix}-${uniqueCode}'
 resource storageAccount 'Microsoft.Storage/storageAccounts@2026-04-01' = {
   name: storageAccountName
   location: location
+  identity: {
+    type: 'SystemAssigned'
+  }
   sku: {
     name: 'Standard_LRS'
   }
@@ -57,6 +60,9 @@ resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2026-04-01'
 resource searchService 'Microsoft.Search/searchServices@2025-05-01' = {
   name: searchServiceName
   location: location
+  identity: {
+    type: 'SystemAssigned'
+  }
   sku: {
     name: searchSku
   }

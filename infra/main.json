@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.43.8.12551",
-      "templateHash": "10236316544756400425"
+      "templateHash": "3858527385364676993"
     }
   },
   "parameters": {
@@ -51,6 +51,9 @@
       "apiVersion": "2026-04-01",
       "name": "[variables('storageAccountName')]",
       "location": "[parameters('location')]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
       "sku": {
         "name": "Standard_LRS"
       },
@@ -87,6 +90,9 @@
       "apiVersion": "2025-05-01",
       "name": "[variables('searchServiceName')]",
       "location": "[parameters('location')]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
       "sku": {
         "name": "[parameters('searchSku')]"
       },
@@ -130,7 +136,6 @@
         "SecurityControl": "Ignore"
       },
       "properties": {
-        "enablePurgeProtection": false,
         "enableRbacAuthorization": true,
         "enabledForDeployment": false,
         "enabledForDiskEncryption": false,
@@ -140,7 +145,6 @@
           "family": "A",
           "name": "standard"
         },
-        "softDeleteRetentionInDays": 7,
         "tenantId": "[subscription().tenantId]"
       }
     },
@@ -164,8 +168,6 @@
         "friendlyName": "[format('Foundry Hub {0}', parameters('nameSuffix'))]",
         "description": "Hub for Foundry IQ and Agent Workflow workshop",
         "applicationInsights": "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]",
-        "publicNetworkAccess": "Enabled",
-        "allowPublicAccessWhenBehindVnet": true,
         "keyVault": "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
         "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
       },
@@ -192,18 +194,14 @@
         "SecurityControl": "Ignore"
       },
       "properties": {
-        "applicationInsights": "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]",
         "friendlyName": "[format('Foundry Project {0}', parameters('nameSuffix'))]",
         "description": "Project for Foundry IQ and Agent Workflow workshop",
         "hubResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces', variables('foundryHubName'))]",
         "publicNetworkAccess": "Enabled",
-        "allowPublicAccessWhenBehindVnet": true,
-        "keyVault": "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+        "allowPublicAccessWhenBehindVnet": true
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]",
-        "[resourceId('Microsoft.MachineLearningServices/workspaces', variables('foundryHubName'))]",
-        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+        "[resourceId('Microsoft.MachineLearningServices/workspaces', variables('foundryHubName'))]"
       ]
     }
   ],
