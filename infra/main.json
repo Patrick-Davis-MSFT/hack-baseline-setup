@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.43.8.12551",
-      "templateHash": "3858527385364676993"
+      "templateHash": "8450427792776898986"
     }
   },
   "parameters": {
@@ -175,6 +175,29 @@
         "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]",
         "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]",
         "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.MachineLearningServices/workspaces/connections",
+      "apiVersion": "2025-12-01",
+      "name": "[format('{0}/{1}', variables('foundryHubName'), 'search')]",
+      "properties": {
+        "category": "CognitiveSearch",
+        "target": "[format('https://{0}.search.windows.net', variables('searchServiceName'))]",
+        "authType": "ApiKey",
+        "isSharedToAll": true,
+        "useWorkspaceManagedIdentity": false,
+        "metadata": {
+          "ApiType": "Azure",
+          "ResourceId": "[resourceId('Microsoft.Search/searchServices', variables('searchServiceName'))]"
+        },
+        "credentials": {
+          "key": "[listAdminKeys(resourceId('Microsoft.Search/searchServices', variables('searchServiceName')), '2025-05-01').primaryKey]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.MachineLearningServices/workspaces', variables('foundryHubName'))]",
+        "[resourceId('Microsoft.Search/searchServices', variables('searchServiceName'))]"
       ]
     },
     {

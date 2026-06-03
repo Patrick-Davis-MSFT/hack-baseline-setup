@@ -141,6 +141,25 @@ resource foundryHub 'Microsoft.MachineLearningServices/workspaces@2025-12-01' = 
   }
 }
 
+resource foundryHubSearchConnection 'Microsoft.MachineLearningServices/workspaces/connections@2025-12-01' = {
+  parent: foundryHub
+  name: 'search'
+  properties: {
+    category: 'CognitiveSearch'
+    target: 'https://${searchService.name}.search.windows.net'
+    authType: 'ApiKey'
+    isSharedToAll: true
+    useWorkspaceManagedIdentity: false
+    metadata: {
+      ApiType: 'Azure'
+      ResourceId: searchService.id
+    }
+    credentials: {
+      key: searchService.listAdminKeys().primaryKey
+    }
+  }
+}
+
 resource foundryProject 'Microsoft.MachineLearningServices/workspaces@2025-12-01' = {
   name: foundryProjectName
   location: location
