@@ -1,0 +1,184 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.43.8.12551",
+      "templateHash": "13630159366714538635"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Region for all resources. Inherited from the resource group created by azd. Supported US regions: centralus, eastus, eastus2, northcentralus, southcentralus, westus, westus3."
+      }
+    },
+    "nameSuffix": {
+      "type": "string",
+      "defaultValue": "[substring(toLower(uniqueString(subscription().subscriptionId, resourceGroup().id)), 0, 8)]",
+      "minLength": 3,
+      "maxLength": 8,
+      "metadata": {
+        "description": "A short readable suffix for naming. Lowercase letters and numbers only (3-8 chars). A dynamic uniqueness code is added automatically."
+      }
+    },
+    "searchSku": {
+      "type": "string",
+      "defaultValue": "standard",
+      "allowedValues": [
+        "standard"
+      ],
+      "metadata": {
+        "description": "Azure AI Search SKU."
+      }
+    }
+  },
+  "variables": {
+    "uniqueCode": "[substring(toLower(uniqueString(subscription().subscriptionId, resourceGroup().name, parameters('location'))), 0, 5)]",
+    "storageAccountName": "[format('st{0}{1}', parameters('nameSuffix'), variables('uniqueCode'))]",
+    "searchServiceName": "[format('srch-{0}-{1}', parameters('nameSuffix'), variables('uniqueCode'))]",
+    "foundryHubName": "[format('hub-{0}-{1}', parameters('nameSuffix'), variables('uniqueCode'))]",
+    "foundryProjectName": "[format('proj-{0}-{1}', parameters('nameSuffix'), variables('uniqueCode'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2023-05-01",
+      "name": "[variables('storageAccountName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2",
+      "tags": {
+        "SecurityControl": "Ignore"
+      },
+      "properties": {
+        "accessTier": "Hot",
+        "allowBlobPublicAccess": true,
+        "allowSharedKeyAccess": true,
+        "networkAcls": {
+          "bypass": "None",
+          "defaultAction": "Allow"
+        },
+        "publicNetworkAccess": "Enabled",
+        "minimumTlsVersion": "TLS1_2",
+        "supportsHttpsTrafficOnly": true
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/blobServices",
+      "apiVersion": "2023-05-01",
+      "name": "[format('{0}/{1}', variables('storageAccountName'), 'default')]",
+      "properties": {
+        "deleteRetentionPolicy": {
+          "enabled": true,
+          "days": 7
+        },
+        "isVersioningEnabled": true
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Search/searchServices",
+      "apiVersion": "2023-11-01",
+      "name": "[variables('searchServiceName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "[parameters('searchSku')]"
+      },
+      "tags": {
+        "SecurityControl": "Ignore"
+      },
+      "properties": {
+        "authOptions": {
+          "apiKeyOnly": {}
+        },
+        "disableLocalAuth": false,
+        "hostingMode": "default",
+        "publicNetworkAccess": "enabled",
+        "semanticSearch": "free"
+      }
+    },
+    {
+      "type": "Microsoft.MachineLearningServices/workspaces",
+      "apiVersion": "2024-04-01",
+      "name": "[variables('foundryHubName')]",
+      "location": "[parameters('location')]",
+      "kind": "hub",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "sku": {
+        "name": "Basic",
+        "tier": "Basic"
+      },
+      "tags": {
+        "SecurityControl": "Ignore"
+      },
+      "properties": {
+        "friendlyName": "[format('Foundry Hub {0}', parameters('nameSuffix'))]",
+        "description": "Hub for Foundry IQ and Agent Workflow workshop",
+        "publicNetworkAccess": "Enabled",
+        "keyVault": null,
+        "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.MachineLearningServices/workspaces",
+      "apiVersion": "2024-04-01",
+      "name": "[variables('foundryProjectName')]",
+      "location": "[parameters('location')]",
+      "kind": "project",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "sku": {
+        "name": "Basic",
+        "tier": "Basic"
+      },
+      "tags": {
+        "SecurityControl": "Ignore"
+      },
+      "properties": {
+        "friendlyName": "[format('Foundry Project {0}', parameters('nameSuffix'))]",
+        "description": "Project for Foundry IQ and Agent Workflow workshop",
+        "hubResourceId": "[resourceId('Microsoft.MachineLearningServices/workspaces', variables('foundryHubName'))]",
+        "publicNetworkAccess": "Enabled"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.MachineLearningServices/workspaces', variables('foundryHubName'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "location": {
+      "type": "string",
+      "value": "[parameters('location')]"
+    },
+    "storageAccountName": {
+      "type": "string",
+      "value": "[variables('storageAccountName')]"
+    },
+    "searchServiceName": {
+      "type": "string",
+      "value": "[variables('searchServiceName')]"
+    },
+    "foundryHubName": {
+      "type": "string",
+      "value": "[variables('foundryHubName')]"
+    },
+    "foundryProjectName": {
+      "type": "string",
+      "value": "[variables('foundryProjectName')]"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "hack-baseline-setup",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "echoapi.echoapi-for-vscode",
+        "mechatroner.rainbow-csv",
+        "ms-vscode.azurecli",
+        "ms-azuretools.azure-dev",
+        "ms-vscode.powershell"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "pwsh",
+        "azure.cli-path": "/usr/bin/az"
+      }
+    }
+  },
+  "postCreateCommand": "az version && azd version && pwsh -v",
+  "remoteUser": "vscode"
+}

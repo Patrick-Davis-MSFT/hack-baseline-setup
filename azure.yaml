@@ -1,0 +1,9 @@
+name: foundry-iq-workshop
+metadata:
+  template: foundry-iq-workshop@1.0.0
+infra:
+  provider: bicep
+  path: infra
+hooks:
+  postprovision:
+    - run: bash ./scripts/upload-coffee-docs.sh
