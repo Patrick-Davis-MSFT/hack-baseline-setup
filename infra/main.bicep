@@ -17,10 +17,12 @@ param searchSku string = 'standard'
 var uniqueCode = substring(toLower(uniqueString(subscription().subscriptionId, resourceGroup().name, location)), 0, 5)
 var storageAccountName = 'st${nameSuffix}${uniqueCode}'
 var searchServiceName = 'srch-${nameSuffix}-${uniqueCode}'
+var appInsightsName = 'appi-${nameSuffix}-${uniqueCode}'
+var keyVaultName = 'kv-${nameSuffix}-${uniqueCode}'
 var foundryHubName = 'hub-${nameSuffix}-${uniqueCode}'
 var foundryProjectName = 'proj-${nameSuffix}-${uniqueCode}'
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2026-04-01' = {
   name: storageAccountName
   location: location
   sku: {
@@ -44,19 +46,15 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   }
 }
 
-resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2023-05-01' = {
+resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2026-04-01' = {
   name: 'default'
   parent: storageAccount
   properties: {
-    deleteRetentionPolicy: {
-      enabled: true
-      days: 7
-    }
     isVersioningEnabled: true
   }
 }
 
-resource searchService 'Microsoft.Search/searchServices@2023-11-01' = {
+resource searchService 'Microsoft.Search/searchServices@2025-05-01' = {
   name: searchServiceName
   location: location
   sku: {
@@ -70,14 +68,51 @@ resource searchService 'Microsoft.Search/searchServices@2023-11-01' = {
       apiKeyOnly: {}
     }
     disableLocalAuth: false
-    hostingMode: 'default'
+    hostingMode: 'Default'
     publicNetworkAccess: 'enabled'
     semanticSearch: 'free'
   }
 }
 
+resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
+  name: appInsightsName
+  location: location
+  kind: 'web'
+  tags: {
+    SecurityControl: 'Ignore'
+  }
+  properties: {
+    Application_Type: 'web'
+    DisableLocalAuth: false
+    IngestionMode: 'ApplicationInsights'
+    publicNetworkAccessForIngestion: 'Enabled'
+    publicNetworkAccessForQuery: 'Enabled'
+    Request_Source: 'rest'
+  }
+}
 
-resource foundryHub 'Microsoft.MachineLearningServices/workspaces@2024-04-01' = {
+resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
+  name: keyVaultName
+  location: location
+  tags: {
+    SecurityControl: 'Ignore'
+  }
+  properties: {
+    enableRbacAuthorization: true
+    enabledForDeployment: false
+    enabledForDiskEncryption: false
+    enabledForTemplateDeployment: false
+    publicNetworkAccess: 'Enabled'
+    sku: {
+      family: 'A'
+      name: 'standard'
+    }
+    tenantId: subscription().tenantId
+  }
+}
+
+
+resource foundryHub 'Microsoft.MachineLearningServices/workspaces@2025-12-01' = {
   name: foundryHubName
   location: location
   kind: 'hub'
@@ -94,13 +129,13 @@ resource foundryHub 'Microsoft.MachineLearningServices/workspaces@2024-04-01' = 
   properties: {
     friendlyName: 'Foundry Hub ${nameSuffix}'
     description: 'Hub for Foundry IQ and Agent Workflow workshop'
-    publicNetworkAccess: 'Enabled'
-    keyVault: null
+    applicationInsights: applicationInsights.id
+    keyVault: keyVault.id
     storageAccount: storageAccount.id
   }
 }
 
-resource foundryProject 'Microsoft.MachineLearningServices/workspaces@2024-04-01' = {
+resource foundryProject 'Microsoft.MachineLearningServices/workspaces@2025-12-01' = {
   name: foundryProjectName
   location: location
   kind: 'project'
@@ -119,11 +154,14 @@ resource foundryProject 'Microsoft.MachineLearningServices/workspaces@2024-04-01
     description: 'Project for Foundry IQ and Agent Workflow workshop'
     hubResourceId: foundryHub.id
     publicNetworkAccess: 'Enabled'
+    allowPublicAccessWhenBehindVnet: true
   }
 }
 
 output location string = location
 output storageAccountName string = storageAccount.name
 output searchServiceName string = searchService.name
+output applicationInsightsName string = applicationInsights.name
+output keyVaultName string = keyVault.name
 output foundryHubName string = foundryHub.name
 output foundryProjectName string = foundryProject.name
