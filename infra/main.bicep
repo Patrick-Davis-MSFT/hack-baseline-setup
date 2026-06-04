@@ -19,8 +19,8 @@ var storageAccountName = 'st${nameSuffix}${uniqueCode}'
 var searchServiceName = 'srch-${nameSuffix}-${uniqueCode}'
 var appInsightsName = 'appi-${nameSuffix}-${uniqueCode}'
 var keyVaultName = 'kv-${nameSuffix}-${uniqueCode}'
-var foundryHubName = 'hub-${nameSuffix}-${uniqueCode}'
-var foundryProjectName = 'proj-${nameSuffix}-${uniqueCode}'
+// var foundryHubName = 'hub-${nameSuffix}-${uniqueCode}'
+// var foundryProjectName = 'proj-${nameSuffix}-${uniqueCode}'
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2026-04-01' = {
   name: storageAccountName
@@ -118,75 +118,75 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
 }
 
 
-resource foundryHub 'Microsoft.MachineLearningServices/workspaces@2025-12-01' = {
-  name: foundryHubName
-  location: location
-  kind: 'hub'
-  identity: {
-    type: 'SystemAssigned'
-  }
-  sku: {
-    name: 'Basic'
-    tier: 'Basic'
-  }
-  tags: {
-    SecurityControl: 'Ignore'
-  }
-  properties: {
-    friendlyName: 'Foundry Hub ${nameSuffix}'
-    description: 'Hub for Foundry IQ and Agent Workflow workshop'
-    applicationInsights: applicationInsights.id
-    keyVault: keyVault.id
-    storageAccount: storageAccount.id
-  }
-}
+// resource foundryHub 'Microsoft.MachineLearningServices/workspaces@2025-12-01' = {
+//   name: foundryHubName
+//   location: location
+//   kind: 'hub'
+//   identity: {
+//     type: 'SystemAssigned'
+//   }
+//   sku: {
+//     name: 'Basic'
+//     tier: 'Basic'
+//   }
+//   tags: {
+//     SecurityControl: 'Ignore'
+//   }
+//   properties: {
+//     friendlyName: 'Foundry Hub ${nameSuffix}'
+//     description: 'Hub for Foundry IQ and Agent Workflow workshop'
+//     applicationInsights: applicationInsights.id
+//     keyVault: keyVault.id
+//     storageAccount: storageAccount.id
+//   }
+// }
 
-resource foundryHubSearchConnection 'Microsoft.MachineLearningServices/workspaces/connections@2025-12-01' = {
-  parent: foundryHub
-  name: 'search'
-  properties: {
-    category: 'CognitiveSearch'
-    target: 'https://${searchService.name}.search.windows.net'
-    authType: 'ApiKey'
-    isSharedToAll: true
-    useWorkspaceManagedIdentity: false
-    metadata: {
-      ApiType: 'Azure'
-      ResourceId: searchService.id
-    }
-    credentials: {
-      key: searchService.listAdminKeys().primaryKey
-    }
-  }
-}
+// resource foundryHubSearchConnection 'Microsoft.MachineLearningServices/workspaces/connections@2025-12-01' = {
+//   parent: foundryHub
+//   name: 'search'
+//   properties: {
+//     category: 'CognitiveSearch'
+//     target: 'https://${searchService.name}.search.windows.net'
+//     authType: 'ApiKey'
+//     isSharedToAll: true
+//     useWorkspaceManagedIdentity: false
+//     metadata: {
+//       ApiType: 'Azure'
+//       ResourceId: searchService.id
+//     }
+//     credentials: {
+//       key: searchService.listAdminKeys().primaryKey
+//     }
+//   }
+// }
 
-resource foundryProject 'Microsoft.MachineLearningServices/workspaces@2025-12-01' = {
-  name: foundryProjectName
-  location: location
-  kind: 'project'
-  identity: {
-    type: 'SystemAssigned'
-  }
-  sku: {
-    name: 'Basic'
-    tier: 'Basic'
-  }
-  tags: {
-    SecurityControl: 'Ignore'
-  }
-  properties: {
-    friendlyName: 'Foundry Project ${nameSuffix}'
-    description: 'Project for Foundry IQ and Agent Workflow workshop'
-    hubResourceId: foundryHub.id
-    publicNetworkAccess: 'Enabled'
-    allowPublicAccessWhenBehindVnet: true
-  }
-}
+// resource foundryProject 'Microsoft.MachineLearningServices/workspaces@2025-12-01' = {
+//   name: foundryProjectName
+//   location: location
+//   kind: 'project'
+//   identity: {
+//     type: 'SystemAssigned'
+//   }
+//   sku: {
+//     name: 'Basic'
+//     tier: 'Basic'
+//   }
+//   tags: {
+//     SecurityControl: 'Ignore'
+//   }
+//   properties: {
+//     friendlyName: 'Foundry Project ${nameSuffix}'
+//     description: 'Project for Foundry IQ and Agent Workflow workshop'
+//     hubResourceId: foundryHub.id
+//     publicNetworkAccess: 'Enabled'
+//     allowPublicAccessWhenBehindVnet: true
+//   }
+// }
 
 output location string = location
 output storageAccountName string = storageAccount.name
 output searchServiceName string = searchService.name
 output applicationInsightsName string = applicationInsights.name
 output keyVaultName string = keyVault.name
-output foundryHubName string = foundryHub.name
-output foundryProjectName string = foundryProject.name
+// output foundryHubName string = foundryHub.name
+// output foundryProjectName string = foundryProject.name

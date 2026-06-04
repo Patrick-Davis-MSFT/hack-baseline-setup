@@ -242,6 +242,8 @@ Errors and deployment status can be seen in the Deployments blade of the resourc
 
 ![Deployment Status Check](prettypictures/DeploymentsFrame.png)
 
+> Note Often PNNL sites may get errors for Policy related deployments, These are normal. *ONLY* the deploymnet `main` is used for this workshop ![Deployment Status Check](prettypictures/deploymenterror.png)
+
 ### Step 4.1 Confirm the Resource Group Exists
 
 Replace the resource group name below with the name you entered earlier.
@@ -264,8 +266,6 @@ You should see resources similar to these:
 - an Azure AI Search service
 - an Application Insights instance
 - a Key Vault
-- an Azure AI Foundry hub workspace
-- an Azure AI Foundry project workspace
 
 ### Step 4.3 Check the Deployment Status
 
@@ -279,12 +279,14 @@ You should see at least one successful resource group deployment.
 
 If your storage account name from the script output was `stwkshopxxxxx`, retrieve a storage account key:
 
+> Note the storage account name is dynamically generated
+
 ```bash
 export STORAGE_ACCOUNT_NAME=stwkshopxxxxx
-export RESOURCE_GROUP_NAME=pnnl-techfest-coffee-rg
+export RESOURCE_GROUP_NAME="your-resource-group-name"
 export STORAGE_KEY=$(az storage account keys list \
-  --resource-group "$RESOURCE_GROUP_NAME" \
-  --account-name "$STORAGE_ACCOUNT_NAME" \
+  -g "$RESOURCE_GROUP_NAME" \
+  -n "$STORAGE_ACCOUNT_NAME" \
   --query '[0].value' \
   --output tsv)
 ```
