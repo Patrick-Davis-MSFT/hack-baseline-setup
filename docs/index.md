@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Azure AI PNNL TechFest Deployment Guide
+title: Azure AI PNNL TechFest PreReq Deployment Guide
 ---
 
 # Azure AI PNNL TechFest Deployment Guide
