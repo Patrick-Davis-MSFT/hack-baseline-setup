@@ -278,7 +278,7 @@ az storage blob list \
 
 ![List Blobs in Storage Account](prettypictures/ListBlobs.png)
 
-## 4. Teardown of the Resources
+## 4. Teardown of the Resources (After the Workshop)
 
 When the Azure AI PNNL TechFest walkthrough is complete, remove the workshop resources so they do not continue to consume quota or cost.
 
