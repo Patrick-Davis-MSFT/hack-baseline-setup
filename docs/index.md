@@ -19,8 +19,6 @@ Use this guide when you want to:
 
 The Azure subscription should be referred to as the **Birthright Subscription** throughout this process.
 
-> Screenshot placeholder: Add an Azure portal screenshot for the Cloud Shell launch area.
-
 ## Before You Start
 
 Make sure you have:
@@ -54,7 +52,7 @@ When the script completes, it deploys the infrastructure in `infra/main.bicep` a
 3. Confirm that you can access the **Birthright Subscription**.
 4. In the Azure portal top bar, select the **Cloud Shell** icon.
 
-![Cloud Shell Launch Icon](docs/prettypictures/CloudshellLaunch.png)
+![Cloud Shell Launch Icon](prettypictures/CloudshellLaunch.png)
 
 5. When prompted to choose a shell, select **Bash**. (If asked, create the new cloudshell without VNET or a storage account)
 > If Cloud Shell prompts you to create a storage account or mount a file share, do **not** create one for this walkthrough. Instead, choose the temporary or ephemeral session option if it is shown in your portal experience.
