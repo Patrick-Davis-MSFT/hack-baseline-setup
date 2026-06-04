@@ -40,7 +40,7 @@ Make sure you have:
 - access to the Azure portal at <https://portal.azure.com>
 - A provisioned Birthright Subscription
 - permission to create a resource group and Azure AI resources
-- enough quota in your selected Azure region for Azure AI Foundry, Azure AI Search, Azure OpenAI, Storage, Key Vault, and Application Insights
+- enough quota in your selected Azure region for Azure AI Foundry, Azure AI Search, Azure OpenAI, Storage, and Application Insights
 
 This repository is deployed with the following tested commands:
 
