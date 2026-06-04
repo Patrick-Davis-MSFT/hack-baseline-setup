@@ -17,7 +17,7 @@ Use this guide when you want to:
 - verify that the Azure resources were created
 - remove the resources when you are done
 
-The Azure subscription should be referred to as the **Birthright Subscription** throughout this process.
+> :exclamation: The Azure subscription will be referred to as the **Birthright Subscription** throughout this process. This is the recommended PNNL subscription for this workshop.
 
 ## Before You Start
 
@@ -92,7 +92,7 @@ Run this command again to verify the change:
 az account show --output table
 ```
 
-![Account Show Bash Command](docs/prettypictures/CloudshellLaunch.png)
+![Account Show Bash Command](prettypictures/CloudshellLaunch.png)
 
 ## 2. Running the Setup Script
 
@@ -130,7 +130,7 @@ Azure resource group name:
 
 Enter a new resource group name for the workshop. Example:
 
-> [!important] Note: **DO NOT** name your resource group pnnl-techfest-coffee-rg. This is only a place holder, You **will** get an error.
+> :exclamation: Note: **DO NOT** name your resource group pnnl-techfest-coffee-rg. This is only a place holder, You :boom: **will** :boom: get an error.
 ```text
 pnnl-techfest-coffee-rg
 ```
@@ -181,7 +181,7 @@ Record these values before closing Cloud Shell:
 
 You will use them in the verification and teardown steps.
 
-![Bash Command Results](docs/prettypictures/BashCommandResults.png)
+![Bash Command Results](prettypictures/BashCommandResults.png)
 
 ## 3. Verify the Resources Exist
 
@@ -189,7 +189,7 @@ After the script completes, verify that the deployment created the expected reso
 
 Errors and deployment status can be seen in the Deployments blade of the resource group.
 
-![Deployment Status Check](docs/prettypictures/DeploymentsFrame.png)
+![Deployment Status Check](prettypictures/DeploymentsFrame.png)
 
 ### Step 3.1 Confirm the Resource Group Exists
 
@@ -263,7 +263,7 @@ az storage blob list \
   --output table
 ```
 
-![List Blobs in Storage Account](docs/prettypictures/ListBlobs.png)
+![List Blobs in Storage Account](prettypictures/ListBlobs.png)
 
 ## 4. Teardown of the Resources
 
