@@ -56,7 +56,7 @@ When the script completes, it deploys the infrastructure in `infra/main.bicep` a
 
 5. When prompted to choose a shell, select **Bash**. (If asked, create the new cloudshell without VNET or a storage account)
 > If Cloud Shell prompts you to create a storage account or mount a file share, do **not** create one for this walkthrough. Instead, choose the temporary or ephemeral session option if it is shown in your portal experience.
-8. Wait for the Bash prompt to open.
+6. Wait for the Bash prompt to open.
 
 Notes:
 
