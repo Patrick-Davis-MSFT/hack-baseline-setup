@@ -5,6 +5,18 @@ title: Azure AI PNNL TechFest PreReq Deployment Guide
 
 # Azure AI PNNL TechFest Deployment Guide
 
+## Optional Learning (Not Required)
+
+These resources are optional, but they can help participants get comfortable with the Azure portal before starting the deployment steps.
+
+- [Navigating the Azure portal - YouTube](https://www.youtube.com/watch?v=BDbiQ6kXbUE)
+- [Microsoft Azure - Using the Global Search - GeeksforGeeks](https://www.geeksforgeeks.org/devops/microsoft-azure-using-the-global-search/)
+- [Use the Azure portal and Azure Resource Manager to Manage Resource Groups - Azure Resource Manager | Microsoft Learn](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal)
+- [Get started with AI in Azure - Training | Microsoft Learn](https://learn.microsoft.com/en-us/training/modules/get-started-with-ai-in-azure/)
+
+
+## Setup PreReq for the Workshops
+
 This guide walks through deploying this repository into Azure from Azure Cloud Shell.
 
 Use this guide when you want to:
@@ -297,3 +309,5 @@ Expected result after deletion finishes:
 ```text
 false
 ```
+
+
