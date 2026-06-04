@@ -11,8 +11,8 @@ These resources are optional, but they can help participants get comfortable wit
 
 - [Navigating the Azure portal - YouTube](https://www.youtube.com/watch?v=BDbiQ6kXbUE)
 - [Microsoft Azure - Using the Global Search - GeeksforGeeks](https://www.geeksforgeeks.org/devops/microsoft-azure-using-the-global-search/)
-- [Use the Azure portal and Azure Resource Manager to Manage Resource Groups - Azure Resource Manager | Microsoft Learn](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal)
-- [Get started with AI in Azure - Training | Microsoft Learn](https://learn.microsoft.com/en-us/training/modules/get-started-with-ai-in-azure/)
+- [Use the Azure portal and Azure Resource Manager to Manage Resource Groups - Azure Resource Manager: Microsoft Learn](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal)
+- [Get started with AI in Azure - Training: Microsoft Learn](https://learn.microsoft.com/en-us/training/modules/get-started-with-ai-in-azure/)
 
 
 ## Setup PreReq for the Workshops
