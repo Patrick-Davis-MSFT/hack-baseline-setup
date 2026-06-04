@@ -18,7 +18,7 @@ var uniqueCode = substring(toLower(uniqueString(subscription().subscriptionId, r
 var storageAccountName = 'st${nameSuffix}${uniqueCode}'
 var searchServiceName = 'srch-${nameSuffix}-${uniqueCode}'
 var appInsightsName = 'appi-${nameSuffix}-${uniqueCode}'
-var keyVaultName = 'kv-${nameSuffix}-${uniqueCode}'
+// var keyVaultName = 'kv-${nameSuffix}-${uniqueCode}'
 // var foundryHubName = 'hub-${nameSuffix}-${uniqueCode}'
 // var foundryProjectName = 'proj-${nameSuffix}-${uniqueCode}'
 
@@ -97,25 +97,25 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
-resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
-  name: keyVaultName
-  location: location
-  tags: {
-    SecurityControl: 'Ignore'
-  }
-  properties: {
-    enableRbacAuthorization: true
-    enabledForDeployment: false
-    enabledForDiskEncryption: false
-    enabledForTemplateDeployment: false
-    publicNetworkAccess: 'Enabled'
-    sku: {
-      family: 'A'
-      name: 'standard'
-    }
-    tenantId: subscription().tenantId
-  }
-}
+// resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
+//   name: keyVaultName
+//   location: location
+//   tags: {
+//     SecurityControl: 'Ignore'
+//   }
+//   properties: {
+//     enableRbacAuthorization: true
+//     enabledForDeployment: false
+//     enabledForDiskEncryption: false
+//     enabledForTemplateDeployment: false
+//     publicNetworkAccess: 'Enabled'
+//     sku: {
+//       family: 'A'
+//       name: 'standard'
+//     }
+//     tenantId: subscription().tenantId
+//   }
+// }
 
 
 // resource foundryHub 'Microsoft.MachineLearningServices/workspaces@2025-12-01' = {
@@ -187,6 +187,6 @@ output location string = location
 output storageAccountName string = storageAccount.name
 output searchServiceName string = searchService.name
 output applicationInsightsName string = applicationInsights.name
-output keyVaultName string = keyVault.name
+// output keyVaultName string = keyVault.name
 // output foundryHubName string = foundryHub.name
 // output foundryProjectName string = foundryProject.name
