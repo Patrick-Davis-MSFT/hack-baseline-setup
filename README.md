@@ -49,6 +49,25 @@ azd up
 - create (or use) one resource group for the environment
 - deploy the Bicep template in `infra/main.bicep`
 
+## Deploy without `azd`
+
+If you cannot use `azd`, use one of the Cloud Shell scripts in `scripts/` after signing in with `az login`:
+
+```bash
+bash ./scripts/deploy-coffee-workshop.sh
+```
+
+```powershell
+pwsh ./scripts/deploy-coffee-workshop.ps1
+```
+
+Each script will:
+
+- prompt for a resource group name and Azure location
+- create the resource group if needed
+- deploy `infra/main.bicep` with `infra/main.parameters.json`
+- upload the `data/Coffee/*` folders into matching blob containers
+
 ## Customize
 
 Update `infra/main.parameters.json` for workshop-specific values:
