@@ -17,7 +17,7 @@ Use this guide when you want to:
 - verify that the Azure resources were created
 - remove the resources when you are done
 
-> :exclamation: The Azure subscription will be referred to as the **Birthright Subscription** throughout this process. This is the recommended PNNL subscription for this workshop.
+> The Azure subscription will be referred to as the **Birthright Subscription** throughout this process. This is the recommended PNNL subscription for this workshop.
 
 ## Before You Start
 
@@ -130,7 +130,8 @@ Azure resource group name:
 
 Enter a new resource group name for the workshop. Example:
 
-> :exclamation: Note: **DO NOT** name your resource group pnnl-techfest-coffee-rg. This is only a place holder, You :boom: **will** :boom: get an error.
+> Note: **DO NOT** name your resource group `pnnl-techfest-coffee-rg`. This is only a place holder, You 💥**will**💥 get an error.
+
 ```text
 pnnl-techfest-coffee-rg
 ```
