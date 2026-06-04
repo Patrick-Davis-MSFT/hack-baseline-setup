@@ -267,7 +267,6 @@ You should see resources similar to these:
 - a storage account
 - an Azure AI Search service
 - an Application Insights instance
-- a Key Vault
 
 ### Step 4.3 Check the Deployment Status
 
