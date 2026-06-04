@@ -106,11 +106,36 @@ az account show --output table
 
 ![Account Show Bash Command](prettypictures/CloudshellLaunch.png)
 
-## 2. Running the Setup Script
+## 2. Register Operational Insights Provider
+
+Run this command to register the Operational Insights provider. No Output is expected.
+
+```bash
+az provider register --namespace Microsoft.OperationalInsights
+```
+
+Then use this Bash loop to wait until the provider registration completes. If you get an error, contact the PNNL Azure Admin.
+
+```bash
+while true; do
+  state=$(az provider show --namespace Microsoft.OperationalInsights --query registrationState --output tsv)
+  echo "$state"
+
+  if [ "$state" = "Registered" ]; then
+    break
+  fi
+
+  sleep 5
+done
+```
+
+![Bash Command Results](prettypictures/ProviderDone.png)
+
+## 3 Running the Setup Script
 
 In Azure Cloud Shell, run the following commands exactly as shown.
 
-### Step 2.1 Clone the Repository
+### Step 3.1 Clone the Repository
 
 ```bash
 git clone https://github.com/Patrick-Davis-MSFT/hack-baseline-setup.git
@@ -118,19 +143,19 @@ git clone https://github.com/Patrick-Davis-MSFT/hack-baseline-setup.git
 
 This downloads the repository into your current Cloud Shell session.
 
-### Step 2.2 Change into the Repository Folder
+### Step 3.2 Change into the Repository Folder
 
 ```bash
 cd ./hack-baseline-setup
 ```
 
-### Step 2.3 Start the Deployment Script
+### Step 3.3 Start the Deployment Script
 
 ```bash
 bash ./scripts/deploy-coffee-workshop.sh
 ```
 
-### Step 2.4 Respond to the Script Prompts
+### Step 3.4 Respond to the Script Prompts
 
 The script asks for two values.
 
@@ -148,6 +173,12 @@ Enter a new resource group name for the workshop. Example:
 pnnl-techfest-coffee-rg
 ```
 
+After you choose your resource group name, save it in a Bash variable so the remaining commands are easy to reuse.
+
+```bash
+export RESOURCE_GROUP_NAME="your-resource-group-name"
+```
+
 Second prompt:
 
 ```text
@@ -161,6 +192,13 @@ Example using the default:
 ```text
 westus
 ```
+
+If you want to reuse the location later in Bash commands, save it as a variable too.
+
+```bash
+export LOCATION="westus"
+```
+
 > We reccommend westus, westus3, southcentralus
 
 What the script does next:
@@ -196,7 +234,7 @@ You will use them in the verification and teardown steps.
 
 ![Bash Command Results](prettypictures/BashCommandResults.png)
 
-## 3. Verify the Resources Exist
+## 4. Verify the Resources Exist
 
 After the script completes, verify that the deployment created the expected resources.
 
@@ -204,20 +242,20 @@ Errors and deployment status can be seen in the Deployments blade of the resourc
 
 ![Deployment Status Check](prettypictures/DeploymentsFrame.png)
 
-### Step 3.1 Confirm the Resource Group Exists
+### Step 4.1 Confirm the Resource Group Exists
 
 Replace the resource group name below with the name you entered earlier.
 
 ```bash
-az group show --name pnnl-techfest-coffee-rg --output table
+az group show --name "$RESOURCE_GROUP_NAME" --output table
 ```
 
 If the command succeeds, the resource group exists.
 
-### Step 3.2 List the Resources in the Resource Group
+### Step 4.2 List the Resources in the Resource Group
 
 ```bash
-az resource list --resource-group pnnl-techfest-coffee-rg --output table
+az resource list --resource-group "$RESOURCE_GROUP_NAME" --output table
 ```
 
 You should see resources similar to these:
@@ -229,15 +267,15 @@ You should see resources similar to these:
 - an Azure AI Foundry hub workspace
 - an Azure AI Foundry project workspace
 
-### Step 3.3 Check the Deployment Status
+### Step 4.3 Check the Deployment Status
 
 ```bash
-az deployment group list --resource-group pnnl-techfest-coffee-rg --output table
+az deployment group list --resource-group "$RESOURCE_GROUP_NAME" --output table
 ```
 
 You should see at least one successful resource group deployment.
 
-### Step 3.4 Verify the Blob Containers Were Uploaded
+### Step 4.4 Verify the Blob Containers Were Uploaded
 
 If your storage account name from the script output was `stwkshopxxxxx`, retrieve a storage account key:
 
@@ -278,13 +316,13 @@ az storage blob list \
 
 ![List Blobs in Storage Account](prettypictures/ListBlobs.png)
 
-## 4. Teardown of the Resources (After the Workshop)
+## 5. Teardown of the Resources (After the Workshop)
 
 When the Azure AI PNNL TechFest walkthrough is complete, remove the workshop resources so they do not continue to consume quota or cost.
 
 This repository deploys all Azure resources into a single resource group, so the simplest teardown is to delete that resource group.
 
-### Step 4.1 Delete the Resource Group
+### Step 5.1 Delete the Resource Group
 
 ```bash
 az group delete --name pnnl-techfest-coffee-rg --yes
@@ -296,7 +334,7 @@ If you want the command to return immediately while Azure continues deletion in 
 az group delete --name pnnl-techfest-coffee-rg --yes --no-wait
 ```
 
-### Step 4.2 Confirm the Resource Group Was Removed
+### Step 5.2 Confirm the Resource Group Was Removed
 
 Run:
 
