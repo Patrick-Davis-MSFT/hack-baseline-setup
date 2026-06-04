@@ -4,6 +4,7 @@ title: Setting Up Microsoft Foundry
 ---
 
 # Microsoft Foundry Setup
+This step will be completed in the workshop.
 
 ## Learning (Not Required)
 
