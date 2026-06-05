@@ -8,3 +8,5 @@ The GlobalCoffeeHealth dataset contains 10,000 synthetic records reflecting real
 
 The dataset captures realistic correlations observed in research—such as caffeine’s impact on sleep, stress, and health—making it ideal for statistical analysis, predictive modeling, and lifestyle or wellness studies.
 
+## Data Set License 
+MIT
