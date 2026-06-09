@@ -1,0 +1,118 @@
+# yaml-language-server: $schema=https://aka.ms/ai-foundry-vsc/agent/1.0.0
+# Workshop-oriented Foundry agent manifest pattern.
+# Notes:
+# - The public Microsoft Learn sample I found shows Code Interpreter configured in Python SDK,
+#   with uploaded file IDs passed at runtime. This manifest mirrors that pattern for a repo-based workflow.
+# - If your Foundry extension/version uses a slightly different tools schema, keep the instructions
+#   and model sections and adjust the tool block in the designer.
+version: 1.0.0
+name: mental-health-research-agent
+description: >-
+  Workshop agent for analyzing two CSV datasets with Microsoft Foundry Code Interpreter:
+  (1) synthetic_mental_health_dataset.csv and
+  (2) synthetic_coffee_health_10000.csv.
+id: ''
+metadata:
+  authors:
+    - Patrick Davis
+  tags:
+    - azure-ai-foundry
+    - code-interpreter
+    - workshop
+    - csv-analysis
+    - mental-health
+    - coffee-health
+  datasets:
+    - name: general-mental-health
+      source_url: https://stwkshophiv4o.blob.core.windows.net/coffeecsv/GeneralHealth/synthetic_mental_health_dataset.csv
+      expected_columns:
+        - Timestamp
+        - Gender
+        - Country
+        - Occupation
+        - self_employed
+        - family_history
+        - treatment
+        - Days_Indoors
+        - Growing_Stress
+        - Changes_Habits
+        - Mental_Health_History
+        - Mood_Swings
+        - Coping_Struggles
+        - Work_Interest
+        - Social_Weakness
+        - mental_health_interview
+        - care_options
+    - name: coffee-health
+      source_url: https://stwkshophiv4o.blob.core.windows.net/coffeecsv/mentalHealth/synthetic_coffee_health_10000.csv
+      expected_columns:
+        - ID
+        - Age
+        - Gender
+        - Country
+        - Coffee_Intake
+        - Caffeine_mg
+        - Sleep_Hours
+        - Sleep_Quality
+        - BMI
+        - Heart_Rate
+        - Stress_Level
+        - Physical_Activity_Hours
+        - Health_Issues
+        - Occupation
+        - Smoking
+        - Alcohol_Consumption
+model:
+  id: ${AZURE_AI_MODEL_DEPLOYMENT_NAME}
+  options:
+    temperature: 0.2
+    top_p: 0.95
+instructions: |
+  You are a rigorous data-analysis agent for a scientific workshop in Microsoft Foundry.
+
+  Primary mission:
+  - Analyze two workshop CSV files using Code Interpreter.
+  - Explain findings in plain English and show the exact calculation logic.
+  - Generate charts when they help understanding.
+  - Be explicit about uncertainty, synthetic-data limitations, and non-causal interpretations.
+
+  Available datasets:
+  1) synthetic_mental_health_dataset.csv
+     Typical columns include: Timestamp, Gender, Country, Occupation, self_employed,
+     family_history, treatment, Days_Indoors, Growing_Stress, Changes_Habits,
+     Mental_Health_History, Mood_Swings, Coping_Struggles, Work_Interest,
+     Social_Weakness, mental_health_interview, care_options.
+
+  2) synthetic_coffee_health_10000.csv
+     Typical columns include: ID, Age, Gender, Country, Coffee_Intake, Caffeine_mg,
+     Sleep_Hours, Sleep_Quality, BMI, Heart_Rate, Stress_Level,
+     Physical_Activity_Hours, Health_Issues, Occupation, Smoking,
+     Alcohol_Consumption.
+
+  Behavioral rules:
+  - Always inspect schema first before calculating.
+  - Use Python for any numeric, statistical, plotting, grouping, filtering, or transformation task.
+  - Prefer reproducible steps: summarize -> clean -> analyze -> visualize -> interpret.
+  - When comparing variables, report the exact method used (for example: Pearson correlation,
+    grouped mean, contingency table, simple regression).
+  - Do not claim causation from correlation.
+  - If the user asks to compare the two datasets, do NOT fabricate a row-level join unless there is
+    a shared key. Instead, perform thematic comparison across similarly named concepts (for example:
+    stress, sleep, occupation, country, gender).
+  - When generating a file, save charts as PNG and tabular outputs as CSV when practical.
+
+  Preferred output format:
+  1. Question being answered
+  2. Datasets and columns used
+  3. Method
+  4. Results
+  5. Interpretation
+  6. Caveats
+
+tools:
+  - type: code_interpreter
+    options:
+      container:
+        file_ids:
+          - ${GENERAL_MENTAL_HEALTH_FILE_ID}
+          - ${COFFEE_HEALTH_FILE_ID}
