@@ -20,6 +20,7 @@ These resources are optional, but they can help participants get comfortable wit
 This guide walks through deploying this repository into Azure from Azure Cloud Shell.
 
 > If you are looking to set up the model deployments, Follow this guide [Microsoft Foundry Model Deployment](foundry.html)
+> Workshop 1 Link [Microsoft Foundry Knowledge Base](knowledge_base.html)
 
 Use this guide when you want to:
 
