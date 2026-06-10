@@ -354,5 +354,5 @@ false
 ```
 
 ## Workshops
-* Workshop 1 Link [Microsoft Foundry Knowledge Base](knowledge_base.html)
-* Workshop 2 Link [Microsoft Foundry Agents](agents.html)
+* Workshop 1 Link [Microsoft Foundry Knowledge Base](comming-soon.html)
+* Workshop 2 Link [Microsoft Foundry Agents](comming-soon.html)
