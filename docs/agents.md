@@ -7,11 +7,11 @@ Microsoft Foundry helps you turn AI ideas into reliable workflows by combining m
 ## Prereq
 1. [Hack Baseline Deployment](index.html)
 1. [Microsoft Foundry Model Deployment](foundry.html)
-1. Download the cvs files click the 
-![Download Image](./prettypictures/agent-02.png)
+1. Download the cvs files click the download button shown below
     * [Generic Mental Health Dataset](https://github.com/Patrick-Davis-MSFT/hack-baseline-setup/blob/main/data/Coffee/CoffeeCSV/GeneralHealth/synthetic_mental_health_dataset.csv)
     * [Large Mental Health Dataset](https://github.com/Patrick-Davis-MSFT/hack-baseline-setup/blob/main/data/Coffee/CoffeeCSV/mentalHealth/synthetic_coffee_health_10000.csv)
 
+![Download Image](./prettypictures/agent-02.png)
 
 To use Knowledge Bases the following needs to be in place to create the knowledge base
 1. One of two of the following security settings (Configured by running the baseline deployment)
@@ -33,7 +33,7 @@ To use Knowledge Bases the following needs to be in place to create the knowledg
 
 1. In the [Azure Portal](https://portal.azure.com) Go to your Microsoft Foundry Project Resource created in the previous step. Click on `Go to Foundry Portal`.
 
-![Find Foundry Project in Portal](./prettypictures/kb-01.pnb)
+![Find Foundry Project in Portal](./prettypictures/kb-01.png)
 
 2. From the Foundry Project Home Page Click on `Build`
 

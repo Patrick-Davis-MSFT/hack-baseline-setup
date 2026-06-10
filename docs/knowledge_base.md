@@ -23,7 +23,7 @@ A knowledge base is a structured, searchable collection of trusted information t
 
 1. In the [Azure Portal](https://portal.azure.com) Go to your Microsoft Foundry Project Resource created in the previous step. Click on `Go to Foundry Portal`.
 
-![Find Foundry Project in Portal](./prettypictures/kb-01.pnb)
+![Find Foundry Project in Portal](./prettypictures/kb-01.png)
 
 2. From the Foundry Project Home Page Click on `Build`
 
