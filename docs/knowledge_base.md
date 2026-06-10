@@ -3,7 +3,7 @@
 A knowledge base is a structured, searchable collection of trusted information that an AI system can use to ground its responses in your organization's content. In this workshop, you will learn how to create and manage a knowledge base in Microsoft Foundry so you can improve answer quality, reduce hallucinations, and make insights easier to discover.
 
 ## Prereq
-1. [Hack Baseline Deployment](foundry.html)
+1. [Hack Baseline Deployment](index.html)
 1. [Microsoft Foundry Model Deployment](foundry.html)
 1. One of two of the following security settings (Configured by running the baseline deployment)
     1. For using API Keys
