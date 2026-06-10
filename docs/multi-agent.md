@@ -72,7 +72,7 @@ Using all tools available answer the question provided.
 ![Foundry Project Home Page](./prettypictures/agent-04.png)
 
 8. On the Build Screen 
-    1. `Hide Notes`
+    1. Delete all the notes or click the button `Hide Notes`
     1. Remove the third agent
     1. Set the first agent to `ask-question`
     1. Set the second agent to `get-answer`
@@ -80,4 +80,7 @@ Using all tools available answer the question provided.
 
 ![Foundry Project Home Page](./prettypictures/agent-04.png)
 
-9. Click the preview and give the workflow a topic. Such as `The topic is Dogs`. Use the trace feature to see how the system created the conversation
+9. Click the `Preview` and give the workflow a topic. Such as `The topic is Dogs`. Use the trace feature to see how the system created the conversation.
+
+## Up Next
+[Multi-Agent Workflows Part 2](multi-agent-2.html)
