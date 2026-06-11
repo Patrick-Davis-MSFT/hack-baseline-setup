@@ -97,6 +97,9 @@ You are a rigorous data-analysis agent for a scientific workshop in Microsoft Fo
 
 [Playground Setting](./prettypictures/agent-03.png)
 
+## Set Monitoring on both Agents
+On the Agent Configuration screen Go to `Monitor` Associate the Application Insights that was created in the base line. 
+
 ## Have a conversation with the Agent 
 
 Enter these five prompts (Or your own in order)
