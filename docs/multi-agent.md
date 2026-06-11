@@ -78,7 +78,7 @@ Using all tools available answer the question provided.
     1. Set the second agent to `get-answer`
     1. Save the workflow as `ask-question-get-answer`
 
-![Foundry Project Home Page](./prettypictures/agent-04.png)
+![Foundry Project Home Page](./prettypictures/agent-05.png)
 
 9. Click the `Preview` and give the workflow a topic. Such as `The topic is Dogs`. Use the trace feature to see how the system created the conversation.
 
