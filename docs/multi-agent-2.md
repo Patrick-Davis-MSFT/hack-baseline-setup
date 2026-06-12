@@ -61,10 +61,11 @@ flowchart TD
     Orchestrator --> DataAgent
     Orchestrator --> ResearchAgent
     Orchestrator --> RecipeAgent
+    Orchestrator --> Insights
 
-    DataAgent --> Insights
-    ResearchAgent --> Insights
-    RecipeAgent --> Insights
+    DataAgent --> Orchestrator
+    ResearchAgent --> Orchestrator
+    RecipeAgent --> Orchestrator
 
     Insights --> User
 ```

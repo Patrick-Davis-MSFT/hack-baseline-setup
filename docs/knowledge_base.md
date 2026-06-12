@@ -18,6 +18,7 @@ A knowledge base is a structured, searchable collection of trusted information t
         * The Search Service Identity needs the following roles (For simplicity set to resource group)
             * Cognitive Services User
             * Storage Blob Data Reader
+            * Storage Blob Data Contributor (Needed for Indexer Debugging)
 
 ## Creating a Knowledge Base in Microsoft Foundry
 
@@ -34,6 +35,7 @@ A knowledge base is a structured, searchable collection of trusted information t
 ![Foundry Project Build Page](./prettypictures/kb-03.png)
 
 4. In the Drop down `Foundry IQ Resource` Select the Azure AI Search that you created in the setup. For this exercise we will use Auth Type `API Key`. Click `Connect`.
+> Note You may be not see thise screen if you connected the resrouces in the Foundry setup steps. If so move on to the next step.
 
 ![Foundry Project Knowledge Base Connect To Search](./prettypictures/kb-04.png)
 
@@ -59,7 +61,7 @@ Use this source to retrieve specific study insights, compare findings across pub
    * Storage Account: The storage account that you created with the standup
    * Container Name: `healtheffects`
    * Authentication Type: API Key
-   * Content Extraction Mode: Standard
+   * Content Extraction Mode: Minimal (Standard if Avaiable)
    * Embedding Model: Same as created earlier
    * Chat Completions Model: Same as created earlier
 
@@ -138,7 +140,7 @@ Query interpretation:
 - Prefer precision over breadth; retrieve fewer high-relevance chunks rather than many weak matches.
 ```
 
-Click Save or Create
+Click `Save knowledge base` or Create
 
 ![Create Knowledge Source](./prettypictures/kb-08.png)
 
@@ -150,14 +152,16 @@ Click Save or Create
 
 Add an additional Knowledge Sources to the Knowledge Base using the other folders Coffee Recipes and CoffeeCSV below are two Descriptions for these Knowlege Sources
 
-Coffee Recipes
+**coffee-recipes**
 ```text
 This knowledge source contains structured coffee and cafe-style beverage preparation guides, including ingredients, brewing methods, proportions, and serving variations for drinks such as espresso, latte, cappuccino, mocha, and related recipes.
 
 Use this source to answer questions about recipe composition, preparation technique, and beverage differences. In research-oriented workflows, treat this source as procedural and culinary reference material that helps contextualize exposure variables (for example, drink type and likely caffeine patterns), not as clinical or biomedical evidence of health outcomes.
 ```
 
-Coffee CSV Note Use the File Type Source
+**coffee-csv** 
+> Note Use the File Type Source (Optional)
+> The recommended process to analize CSV files is to use the Code Interpeter Tool 
 ```
 This knowledge source contains synthetic daily lifestyle and mental wellness records for working individuals, including sleep, screen time, exercise, workload, social interaction, coffee intake, mood, and stress indicators.
 Use this source for exploratory analysis of behavioral patterns and hypothesis generation related to coffee consumption and wellbeing. Treat all findings as synthetic, non-clinical, and non-generalizable; use them to identify trends and potential relationships, not to make causal or medical claims.
@@ -169,9 +173,10 @@ Use this source to retrieve population-level pattern insights and perform compar
 ```
 
 
-9. Optionally add a web component
+9. Add a web component
 
-Web Knowledge Source Description
+**ks-web**
+> Choose Type Web
 ```text
 This web knowledge source is used to retrieve recent and authoritative research on coffee and human health outcomes when local documents are insufficient or when updated evidence is needed. It supports questions on cardiovascular, metabolic, neurological, sleep, cancer, liver, and mortality outcomes related to coffee and caffeine exposure.
 
@@ -179,8 +184,8 @@ Prioritize high-quality scientific and public-health sources, including peer-rev
 ```
 > Note Adding a Web source will change the Output mode to Abstrative Data
 
-10. Create an Answer Instructions
-
+10. Create an Answer Instructions (optional)
+Change the `Output mode` to `Answer synthesis`
 When changing to answer synthesis you will be given an optional prompt for generating answer instructions. Here is an example
 
 ```text
@@ -362,6 +367,95 @@ Style:
 ```
 
 Click Save and chat on your data. For example as `Tell me the effects of coffee on heart health`
+
+## Optionally Add the CSV files to a Code Interpeter 
+
+1) Download the cvs files click the download button shown below
+    * [Generic Mental Health Dataset](https://github.com/Patrick-Davis-MSFT/hack-baseline-setup/blob/main/data/Coffee/CoffeeCSV/GeneralHealth/synthetic_mental_health_dataset.csv)
+    * [Large Mental Health Dataset](https://github.com/Patrick-Davis-MSFT/hack-baseline-setup/blob/main/data/Coffee/CoffeeCSV/mentalHealth/synthetic_coffee_health_10000.csv)
+
+2) Add the Code interpreter under Tools
+    * Click `+ Files` Under the Code interpreter and Upload the CSVs that you downloaded earlier. Click Attach. When they get first uploaded they will appear as `assistant-[unique string]`. This is expected. The file names will show after refreshing the screen. 
+    * Save the Agent
+
+**New Instructions (System Prompt)**
+```text
+You are a Coffee Research and Data Analysis Agent for a scientific workshop in Microsoft Foundry, combining knowledge-base grounded retrieval with reproducible CSV analysis.
+
+Mission:
+Provide evidence-based, citation-rich answers about coffee and health, and perform transparent data analysis on workshop datasets when needed. Report uncertainty clearly, avoid unsupported claims, and distinguish between established evidence and exploratory patterns.
+
+Core operating modes:
+- Knowledge mode (default): Use the connected knowledge base as the primary source of truth for biomedical and research claims.
+- Data mode (when analysis is requested or needed): Use Code Interpreter to analyze workshop CSV files with reproducible methods, explicit calculation logic, and helpful charts.
+- Hybrid mode: Synthesize knowledge-base evidence with CSV-based exploratory findings, clearly labeling each evidence type.
+
+Available workshop datasets (for Code Interpreter):
+1) synthetic_mental_health_dataset.csv
+   Typical columns include: Timestamp, Gender, Country, Occupation, self_employed, family_history, treatment, Days_Indoors, Growing_Stress, Changes_Habits, Mental_Health_History, Mood_Swings, Coping_Struggles, Work_Interest, Social_Weakness, mental_health_interview, care_options.
+
+2) synthetic_coffee_health_10000.csv
+   Typical columns include: ID, Age, Gender, Country, Coffee_Intake, Caffeine_mg, Sleep_Hours, Sleep_Quality, BMI, Heart_Rate, Stress_Level, Physical_Activity_Hours, Health_Issues, Occupation, Smoking, Alcohol_Consumption.
+
+Grounding and source-priority rules:
+- Prioritize HealthEffects knowledge sources for biomedical claims.
+- Treat CoffeeRecipes as preparation context only, not medical evidence.
+- Treat CSV findings as synthetic, exploratory, non-clinical, and non-generalizable.
+- Use web content only when local sources are insufficient or recency is required; clearly label web-derived content and include source links and publication dates.
+- Do not invent facts, statistics, calculations, or citations.
+
+Data-analysis behavior (Code Interpreter):
+- Always inspect schema before calculations.
+- Use Python for numeric, statistical, grouping, filtering, transformation, and plotting tasks.
+- Use reproducible workflow: summarize -> clean -> analyze -> visualize -> interpret.
+- State exact analytical methods used (for example: grouped mean, contingency table, Pearson/Spearman correlation, simple regression).
+- If comparing the two CSVs, do not fabricate row-level joins without a valid shared key; perform thematic comparisons across common concepts (for example: stress, sleep, occupation, country, gender).
+- Save generated charts as PNG and tabular outputs as CSV when practical.
+
+Reasoning and evidence rules:
+- Do not infer causation from correlation unless explicitly supported by strong evidence.
+- When evidence conflicts, present both sides and likely reasons (study design, population, dose, outcome definitions).
+- If evidence is weak, mixed, or missing, say so explicitly.
+- Distinguish human evidence from animal/in vitro findings when relevant.
+- Prefer stronger evidence hierarchies for health claims (meta-analysis/systematic review > randomized trial > observational studies > weaker designs/opinion).
+
+Safety and scope:
+- Do not provide diagnosis, treatment plans, or personalized medical advice.
+- Avoid definitive medical recommendations.
+- For clinical decisions, recommend consulting qualified healthcare professionals.
+
+Response style:
+- Neutral, precise, scientific tone.
+- Concise synthesis over long narrative.
+- Ask a clarifying question only when the request is ambiguous or under-specified.
+
+Unified response format:
+1. Question being answered
+2. Sources and data used
+   - Knowledge sources and citations used
+   - CSV files and columns used (if applicable)
+3. Method
+   - Retrieval approach and/or analysis method with exact logic
+4. Results
+   - Direct answer (2-4 sentences first), then key findings
+5. Interpretation and confidence
+   - Confidence: High / Moderate / Low with brief reason
+6. Limitations and caveats
+   - Include synthetic-data and non-causal caveats where applicable
+7. Citations and artifacts
+   - Citations for every major claim; include web URLs/dates when used
+   - List generated files (for example PNG/CSV) when applicable
+```
+
+Save the Agent and try the following prompt
+
+**Prompt**
+```markdown
+Please answer this in hybrid mode using both sources:
+
+1. Query the connected knowledge base for peer-reviewed evidence on how coffee intake relates to sleep quality, stress, and cardiovascular indicators.
+2. Use Code Interpreter to analyze both attached CSV datasets to test those same themes empirically.
+```
 
 ## Monitoring and troubleshooting the Knowledge Base
 

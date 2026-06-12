@@ -95,7 +95,7 @@ You are a rigorous data-analysis agent for a scientific workshop in Microsoft Fo
   6. Caveats
 ```
 
-[Playground Setting](./prettypictures/agent-03.png)
+![Playground Setting](./prettypictures/agent-03.png)
 
 ## Set Monitoring on both Agents
 On the Agent Configuration screen Go to `Monitor` Associate the Application Insights that was created in the base line. 
@@ -114,7 +114,8 @@ Enter these five prompts (Or your own in order)
 
 > Remove the CSV datasource so that datasources are not duplicated. 
 
-1. Under Knowlege add the Knowledge base created in Workshop 1
+1. Under Knowlege add the Knowledge base [created in Workshop 1](knowledge_base.md)
+1. Save the Knowledge Base
 1. Converse with the Agent using the following prompts
 
 ## 3-Turn Script (Code Interpreter + Knowledge Base)
@@ -122,6 +123,8 @@ Enter these five prompts (Or your own in order)
 Try this script with the both the Code interpeter and the Knowledge base
 
 ### Turn 1
+
+```text
 Start a combined analysis using both uploaded CSV files and the connected knowledge base.
 
 Assume the CSV records are de-identified study data (not synthetic), and treat them as observational evidence with appropriate limitations.
@@ -130,8 +133,11 @@ First:
 1. Inspect schema, data quality, missingness, and outliers.
 2. Identify comparable variables across datasets.
 3. Provide a brief analysis plan for sleep, stress, and cardiovascular indicators.
+```
 
 ### Turn 2
+
+```text
 Run quantitative analysis in Code Interpreter, then ground findings with the knowledge base.
 
 In Code Interpreter:
@@ -142,8 +148,11 @@ In Code Interpreter:
 In Knowledge Base:
 1. Retrieve at least 2 relevant studies or reviews for each major claim area (sleep/stress and cardiovascular).
 2. Compare whether external evidence supports, contradicts, or is mixed relative to dataset findings.
+```
 
 ### Turn 3
+
+```text
 Create a final evidence synthesis with this exact structure:
 
 1. Direct answer (3-5 sentences)
@@ -155,6 +164,7 @@ Create a final evidence synthesis with this exact structure:
 7. Next analyses to strengthen conclusions
 
 Also export charts as PNG and summary tables as CSV.
+```
 
 ## Up Next: Multi Agents
 [Multi Agent Workflows](multi-agent.html)

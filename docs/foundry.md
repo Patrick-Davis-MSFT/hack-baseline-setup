@@ -11,6 +11,24 @@ This step will be completed in the workshop.
 * [Training for Microsoft Foundry: Microsoft Learn](https://learn.microsoft.com/en-us/training/azure/ai-foundry)
 * [Quick Start for Microsoft Foundry: Microsoft Learn](https://learn.microsoft.com/en-us/azure/foundry/tutorials/quickstart-create-foundry-resources?tabs=portal)
 
+
+## Authenication setup
+To connect resources you will need one of two methods. Below describes how to set up these two methods. Key Authenication is the default and configured though the deployment script
+
+1. One of two of the following security settings (Configured by running the baseline deployment)
+    1. For using API Keys
+        * The Azure AI Search Resource needs to have API Keys turned on (Search Service Resource --> Keys --> API Access control, select API keys or Both)
+        * The Storage Account needs to have API Keys Active (Storage Account Resource --> Settings --> Allow storage account key access, Enabled)
+        * The Foundry Hub Needs API keys enabled (Foundry Resource --> Properties --> Allow API key based authentication, Enabled)
+    1. For Managed Identity Access 
+        * Foundry Hub Identity needs the following roles (For simplicity set to resource group)
+            * Cognitive Services User
+            * Search Index Data Contributor
+            * Storage Blob Data Reader
+        * The Search Service Identity needs the following roles (For simplicity set to resource group)
+            * Cognitive Services User
+            * Storage Blob Data Reader
+
 ## Setting Up Microsoft Foundry
 
 This guide walks you through setting up Microsoft Foundry in a way that complies with PNNL Birthright Subscription requirements.
@@ -161,3 +179,50 @@ There are two models that you will deploy.
 Repeat these steps so that you have two deployments: one GPT deployment and one embedding deployment.
 
 ![Deployments Page with Models](prettypictures/22-foundry.png)
+
+### Connect Resources
+
+1) From the home Page. Click on `Operate`
+
+![Deployments Page with Models](prettypictures/23-foundry.png)
+
+2) From the Operate Page Click on `Admin` then click on the Foundry Hub name under the `Parent Resource` column (not the project name)
+
+![Deployments Page with Models](prettypictures/24-foundry.png)
+
+3) Click on `Connected Resources`
+> If you see a API Key authentication is disabled you must use System Identity authencation. 
+
+![Deployments Page with Models](prettypictures/25-foundry.png)
+
+4) Click on `Add Connection`
+
+![Deployments Page with Models](prettypictures/25-foundry.png)
+
+5) Select `Azure AI Search` and `Continue`
+
+![Deployments Page with Models](prettypictures/26-foundry.png)
+
+6) Select the `Connect Manually`
+
+From the Portal you can get the following information 
+   1. Endpoint (On the Search Service `Overview` Screen it is under the `Essensials` labled `URL`)
+   1. API Key  (On the Search Service `Keys` Screen use one of the admin keys)
+   1. Give it a name such as `SearchServiceKB`
+   1. Click `Connect`
+
+![Deployments Page with Models](prettypictures/27-foundry.png)
+
+7) Click on `Add Connection` again and select `Application Insights` and then `Continue`
+
+![Deployments Page with Models](prettypictures/28-foundry.png)
+
+8) Select the `Application Insights` that was created with the script. 
+
+![Deployments Page with Models](prettypictures/29-foundry.png)
+
+9) You should now have 2 new Connected Resources
+
+![Deployments Page with Models](prettypictures/30-foundry.png)
+
+
