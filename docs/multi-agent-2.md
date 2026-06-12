@@ -55,6 +55,8 @@ Build a **multi-agent workflow in Microsoft Foundry** using the **Group Chat pat
    - `coffeerecipes` container
 5. Complete ingestion
 
+![Workflow](./prettypictures/group-agent-04.png)
+
  ```mermaid 
 flowchart TD
     User --> Orchestrator
@@ -74,6 +76,9 @@ flowchart TD
 
 ## 🤖 Step 2: Create Agents (Foundry → Agents)
 
+> Note In All Agents remove the Web Search Tool
+
+![Workflow](./prettypictures/group-agent-05.png)
 
 ### ✅ 2.1 Orchestrator Agent
 Name: `Orchestrator-Agent`
@@ -149,6 +154,8 @@ Name: `Data-Analyst-Agent`
 - Upload: 
     - synthetic_mental_health_dataset.csv
     - synthetic_coffee_health_10000.csv 
+
+![Workflow](./prettypictures/group-agent-05.png)
 
 **Prompt Template**
 
@@ -263,14 +270,8 @@ trigger:
         messages: =Local.LastUserMessage
       output:
         autoSend: true
-        responseObject: Local.LastOrchestratorMessage
+        responseObject: Local.parsedOrchestratorOut
         messages: Local.LastOrchestratorMessage
-    - kind: ParseValue
-      variable: Local.parsedOrchestratorOut
-      valueType:
-        kind: Record
-      value: =Local.LastOrchestratorMessage
-      id: node-1781205899093
     - kind: SetVariable
       id: node-1781202317007
       variable: Local.NextAgentName
@@ -342,6 +343,7 @@ id: ""
 name: coffee-group-chat
 description: ""
 
+
 ```
 
 When you click on the visualize button you should see the following.
@@ -352,6 +354,8 @@ Save the workflow.
 
 ---
 ## ▶️ Step 4: Test Workflow (Foundry Playground) 
+
+> If you get no Output that means the agent failed on `Too Many Requests` you will either need to increase the quota or wait 2 minutes for a cool down period
 
 Click the `Preview` button to chat with the workflow.
 
@@ -365,8 +369,6 @@ What does research say about coffee and anxiety?
 ```
 Suggest a coffee recipe aligned with reducing stress.
 ```
-
-📸 `images/step4-testing.png` 
 
 
 ---

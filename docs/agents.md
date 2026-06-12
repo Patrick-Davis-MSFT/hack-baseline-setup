@@ -51,6 +51,9 @@ To use Knowledge Bases the following needs to be in place to create the knowledg
     * Click `+ Files` Under the Code interpreter and Upload the CSVs that you downloaded earlier. Click Attach. When they get first uploaded they will appear as `assistant-[unique string]`. This is expected. The file names will show after refreshing the screen. 
     * Save the Agent
 
+
+![Add CSV Files](./prettypictures/agent-06.png)
+
 Instructions
 ```text
 You are a rigorous data-analysis agent for a scientific workshop in Microsoft Foundry.
