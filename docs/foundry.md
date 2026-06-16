@@ -226,3 +226,8 @@ From the Portal you can get the following information
 ![Deployments Page with Models](prettypictures/30-foundry.png)
 
 
+
+## Up Next Workshops...
+* Workshop 1 Link [Microsoft Foundry Knowledge Base](knowledge_base.html)
+* Workshop 2 Link [Microsoft Foundry Agents](agents.html)
+
