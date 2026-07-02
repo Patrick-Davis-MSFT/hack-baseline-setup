@@ -1,9 +1,9 @@
 ---
 layout: default
-title: Azure AI PNNL TechFest PreReq Deployment Guide
+title: Azure AI Coffee Workshop PreReq Deployment Guide
 ---
 
-# Azure AI PNNL TechFest Deployment Guide
+# Azure AI Coffee Workshop Deployment Guide
 
 ## Optional Learning (Not Required)
 
@@ -33,14 +33,14 @@ Use this guide when you want to:
 - verify that the Azure resources were created
 - remove the resources when you are done
 
-> ❗The Azure subscription will be referred to as the **Birthright Subscription** throughout this process. This is the recommended PNNL subscription for this workshop.
+> ❗The Azure subscription will be referred to as the **Workshop Subscription** throughout this process. Use a subscription where you have permission to deploy resources and sufficient quota.
 
 ## Before You Start
 
 Make sure you have:
 
 - access to the Azure portal at <https://portal.azure.com>
-- A provisioned Birthright Subscription
+- an active Workshop Subscription
 - permission to create a resource group and Azure AI resources
 - enough quota in your selected Azure region for Azure AI Foundry, Azure AI Search, Azure OpenAI, Storage, and Application Insights
 
@@ -65,7 +65,7 @@ When the script completes, it deploys the infrastructure in `infra/main.bicep` a
 
 1. Open the Azure portal at <https://portal.azure.com>.
 2. Sign in with the account you will use for the workshop.
-3. Confirm that you can access the **Birthright Subscription**.
+3. Confirm that you can access the **Workshop Subscription**.
 4. In the Azure portal top bar, select the **Cloud Shell** icon.
 
 ![Cloud Shell Launch Icon](prettypictures/CloudshellLaunch.png)
@@ -88,7 +88,7 @@ Run:
 az account show --output table
 ```
 
-Review the output and confirm that the active subscription is the **Birthright Subscription**.
+Review the output and confirm that the active subscription is the **Workshop Subscription**.
 
 If it is not, list the subscriptions available to you:
 
@@ -99,7 +99,7 @@ az account list --output table
 Then set the active subscription:
 
 ```bash
-az account set --subscription "Birthright Subscription Name"
+az account set --subscription "Workshop Subscription Name"
 ```
 
 Run this command again to verify the change:
@@ -118,7 +118,7 @@ Run this command to register the Operational Insights provider. No Output is exp
 az provider register --namespace Microsoft.OperationalInsights
 ```
 
-Then use this Bash loop to wait until the provider registration completes. If you get an error, contact the PNNL Azure Admin.
+Then use this Bash loop to wait until the provider registration completes. If you get an error, contact your Azure administrator.
 
 ```bash
 while true; do
@@ -171,10 +171,10 @@ Azure resource group name:
 
 Enter a new resource group name for the workshop. Example:
 
-> ❗Note: **DO NOT** name your resource group `pnnl-techfest-coffee-rg`. This is only a place holder, You 💥**will**💥 get an error.
+> ❗Note: **DO NOT** use the exact sample name `coffee-workshop-rg`. Choose a unique resource group name to avoid collisions.
 
 ```text
-pnnl-techfest-coffee-rg
+coffee-workshop-rg
 ```
 
 After you choose your resource group name, save it in a Bash variable so the remaining commands are easy to reuse.
@@ -189,7 +189,7 @@ Second prompt:
 Azure location [westus]:
 ```
 
-You can press `Enter` to accept `westus`, or type a different Azure region if your Birthright Subscription requires another supported region.
+You can press `Enter` to accept `westus`, or type a different Azure region if your Workshop Subscription requires another supported region.
 
 Example using the default:
 
@@ -216,14 +216,14 @@ What the script does next:
 During a successful deployment, you should see output similar to this:
 
 ```text
-Creating resource group pnnl-techfest-coffee-rg in westus
+Creating resource group coffee-workshop-rg in westus
 Deploying infrastructure from infra/main.bicep
 Uploading CoffeeHealth to container coffeehealth
 Uploading CoffeeRecipes to container coffeerecipes
 Uploading HealthEffects to container healtheffects
 
 Deployment complete
-Resource group: pnnl-techfest-coffee-rg
+Resource group: coffee-workshop-rg
 Location: westus
 Storage account: stwkshopxxxxx
 ```
@@ -246,7 +246,7 @@ Errors and deployment status can be seen in the Deployments blade of the resourc
 
 ![Deployment Status Check](prettypictures/DeploymentsFrame.png)
 
-> Note Often PNNL sites may get errors for Policy related deployments, These are normal. *ONLY* the deploymnet `main` is used for this workshop ![Deployment Status Check](prettypictures/deploymenterror.png)
+> Note: Some enterprise subscriptions may show policy-related deployment errors. These are often expected. *ONLY* the deployment `main` is used for this workshop. ![Deployment Status Check](prettypictures/deploymenterror.png)
 
 ### Step 4.1 Confirm the Resource Group Exists
 
@@ -323,20 +323,20 @@ az storage blob list \
 
 ## 5. Teardown of the Resources (After the Workshop)
 
-When the Azure AI PNNL TechFest walkthrough is complete, remove the workshop resources so they do not continue to consume quota or cost.
+When the Azure AI Coffee Workshop walkthrough is complete, remove the workshop resources so they do not continue to consume quota or cost.
 
 This repository deploys all Azure resources into a single resource group, so the simplest teardown is to delete that resource group.
 
 ### Step 5.1 Delete the Resource Group
 
 ```bash
-az group delete --name pnnl-techfest-coffee-rg --yes
+az group delete --name "$RESOURCE_GROUP_NAME" --yes
 ```
 
 If you want the command to return immediately while Azure continues deletion in the background, use:
 
 ```bash
-az group delete --name pnnl-techfest-coffee-rg --yes --no-wait
+az group delete --name "$RESOURCE_GROUP_NAME" --yes --no-wait
 ```
 
 ### Step 5.2 Confirm the Resource Group Was Removed
@@ -344,7 +344,7 @@ az group delete --name pnnl-techfest-coffee-rg --yes --no-wait
 Run:
 
 ```bash
-az group exists --name pnnl-techfest-coffee-rg
+az group exists --name "$RESOURCE_GROUP_NAME"
 ```
 
 Expected result after deletion finishes:

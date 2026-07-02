@@ -19,7 +19,9 @@ class WorkshopConstants:
     ENV_FOUNDRY_ACCOUNT_NAME = "FOUNDRY_ACCOUNT_NAME"
     ENV_FOUNDRY_PROJECT_NAME = "FOUNDRY_PROJECT_NAME"
     ENV_FOUNDRY_PROJECT_ENDPOINT = "AZURE_AI_PROJECT_ENDPOINT"
+    ENV_FOUNDRY_PROJECT_API_KEY = "AZURE_AI_PROJECT_API_KEY"
     ENV_SEARCH_SERVICE_NAME = "SEARCH_SERVICE_NAME"
+    ENV_SEARCH_API_KEY = "SEARCH_API_KEY"
     ENV_STORAGE_ACCOUNT_NAME = "STORAGE_ACCOUNT_NAME"
     ENV_APPLICATION_INSIGHTS_NAME = "APPLICATION_INSIGHTS_NAME"
     ENV_MODEL_ZONE = "MODEL_DEPLOYMENT_ZONE"
@@ -64,7 +66,9 @@ class WorkshopConfig:
     foundry_account_name: str
     foundry_project_name: str
     foundry_project_endpoint: str
+    foundry_project_api_key: str
     search_service_name: str
+    search_api_key: str
     storage_account_name: str
     application_insights_name: str
     model_zone: str
@@ -83,8 +87,13 @@ class WorkshopConfig:
             return re.sub(r"/api/projects/.*$", "", self.foundry_project_endpoint)
         return ""
 
-    def as_dict(self) -> dict[str, Any]:
-        return asdict(self)
+    def as_dict(self, redact_secrets: bool = True) -> dict[str, Any]:
+        data = asdict(self)
+        if redact_secrets:
+            for field_name in ("foundry_project_api_key", "search_api_key"):
+                if data.get(field_name):
+                    data[field_name] = "***"
+        return data
 
     def show(self) -> None:
         print(json.dumps(self.as_dict(), indent=2))
@@ -167,6 +176,11 @@ def build_workshop_config(overrides: dict[str, str] | None = None) -> WorkshopCo
         or names_by_type.get(WorkshopConstants.RESOURCE_TYPE_SEARCH, "")
     )
 
+    search_api_key = (
+        override_values.get("search_api_key")
+        or os.getenv(WorkshopConstants.ENV_SEARCH_API_KEY, "")
+    )
+
     application_insights_name = (
         override_values.get("application_insights_name")
         or os.getenv(WorkshopConstants.ENV_APPLICATION_INSIGHTS_NAME, "")
@@ -182,6 +196,11 @@ def build_workshop_config(overrides: dict[str, str] | None = None) -> WorkshopCo
     foundry_project_endpoint = (
         override_values.get("foundry_project_endpoint")
         or os.getenv(WorkshopConstants.ENV_FOUNDRY_PROJECT_ENDPOINT, "")
+    )
+
+    foundry_project_api_key = (
+        override_values.get("foundry_project_api_key")
+        or os.getenv(WorkshopConstants.ENV_FOUNDRY_PROJECT_API_KEY, "")
     )
 
     foundry_project_name = (
@@ -213,7 +232,9 @@ def build_workshop_config(overrides: dict[str, str] | None = None) -> WorkshopCo
         foundry_account_name=foundry_account_name,
         foundry_project_name=foundry_project_name,
         foundry_project_endpoint=foundry_project_endpoint,
+        foundry_project_api_key=foundry_project_api_key,
         search_service_name=search_service_name,
+        search_api_key=search_api_key,
         storage_account_name=storage_account_name,
         application_insights_name=application_insights_name,
         model_zone=model_zone,
@@ -391,13 +412,20 @@ def ensure_models_deployed(config: WorkshopConfig) -> dict[str, str]:
 
 
 class SearchRestClient:
-    def __init__(self, endpoint: str) -> None:
-        token = DefaultAzureCredential().get_token(WorkshopConstants.SEARCH_SCOPE).token
+    def __init__(self, endpoint: str, api_key: str = "") -> None:
         self.endpoint = endpoint.rstrip("/")
-        self.headers = {
-            "Authorization": f"Bearer {token}",
-            "Content-Type": "application/json",
-        }
+
+        if api_key:
+            self.headers = {
+                "api-key": api_key,
+                "Content-Type": "application/json",
+            }
+        else:
+            token = DefaultAzureCredential().get_token(WorkshopConstants.SEARCH_SCOPE).token
+            self.headers = {
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json",
+            }
 
     def put(self, path: str, payload: dict[str, Any]) -> None:
         url = f"{self.endpoint}/{path}?api-version={WorkshopConstants.SEARCH_API_VERSION}"
@@ -409,6 +437,30 @@ class SearchRestClient:
         response = requests.post(url, headers=self.headers, json=payload, timeout=WorkshopConstants.DEFAULT_TIMEOUT_SECONDS)
         response.raise_for_status()
         return response.json() if response.content else {}
+
+
+def build_search_client(config: WorkshopConfig) -> SearchRestClient:
+    return SearchRestClient(config.search_endpoint, api_key=config.search_api_key)
+
+
+def build_project_client(config: WorkshopConfig) -> Any:
+    if not config.foundry_project_endpoint:
+        raise ValueError("Missing foundry_project_endpoint in workshop configuration.")
+
+    from azure.ai.projects import AIProjectClient
+
+    if config.foundry_project_api_key:
+        from azure.core.credentials import AzureKeyCredential
+
+        return AIProjectClient(
+            endpoint=config.foundry_project_endpoint,
+            credential=AzureKeyCredential(config.foundry_project_api_key),
+        )
+
+    return AIProjectClient(
+        endpoint=config.foundry_project_endpoint,
+        credential=DefaultAzureCredential(),
+    )
 
 
 def create_search_index(client: SearchRestClient, index_name: str) -> None:

@@ -31,7 +31,7 @@ To connect resources you will need one of two methods. Below describes how to se
 
 ## Setting Up Microsoft Foundry
 
-This guide walks you through setting up Microsoft Foundry in a way that complies with PNNL Birthright Subscription requirements.
+This guide walks you through setting up Microsoft Foundry in a way that aligns with typical enterprise subscription governance requirements.
 
 ### Navigate to the Resource Group
 1. Open the Azure portal at <https://portal.azure.com>.
