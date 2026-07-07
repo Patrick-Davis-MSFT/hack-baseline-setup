@@ -34,8 +34,8 @@ class WorkshopConstants:
     }
 
     CHAT_MODEL_CANDIDATES = (
-        "gpt-4.1",
-        "gpt-4.1-mini",
+        "gpt-5.4",
+        "gpt-5.4-mini",
         "gpt-4o-mini",
     )
     EMBEDDING_MODEL_CANDIDATES = (
@@ -598,6 +598,7 @@ def create_knowledge_base(
     chat_deployment_name: str,
     chat_model_name: str,
     azure_openai_api_key: str = "",
+    retrieval_instructions: str = "",
 ) -> None:
     normalized_chat_model_name = re.sub(
         r"^gpt-(\d+)-(\d+)(.*)$",
@@ -626,6 +627,8 @@ def create_knowledge_base(
             }
         ],
     }
+    if retrieval_instructions.strip():
+        body["retrievalInstructions"] = retrieval_instructions.strip()
     client.put(f"knowledgebases/{knowledge_base_name}", body)
 
 

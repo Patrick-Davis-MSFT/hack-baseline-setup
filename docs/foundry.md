@@ -153,7 +153,7 @@ There are two ways to log in to Microsoft Foundry:
 There are two models that you will deploy.
 
 * We recommend the following models
-    * gpt-4.1
+    * gpt-5.4
     * text-embedding-3-small
 
 > Any model that supports query planning and embeddings can be used. For more information, see [Which LLM models are supported for query planning?](https://learn.microsoft.com/en-us/azure/foundry/agents/concepts/foundry-iq-faq#which-llm-models-are-supported-for-query-planning).
@@ -164,7 +164,7 @@ There are two models that you will deploy.
 
 ![Operate Page](prettypictures/18-foundry.png)
 
-4. Find the model to deploy. We recommend `gpt-4.1` or `text-embedding-3-small`.
+4. Find the model to deploy. We recommend `gpt-5.4` or `text-embedding-3-small`.
 
 ![Open Foundry Page](prettypictures/19-foundry.png)
 
