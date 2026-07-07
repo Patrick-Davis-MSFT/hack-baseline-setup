@@ -1,0 +1,28 @@
+kind: workflow
+name: ask-question-get-answer
+description: Sequential workshop workflow
+trigger:
+  kind: OnConversationStart
+  id: trigger_wf
+  actions:
+    - kind: InvokeAzureAgent
+      id: ask_question_step
+      agent:
+        name: ask-question
+      conversationId: =System.ConversationId
+      input:
+        messages: =System.LastMessage.Text
+      output:
+        autoSend: false
+        messages: Local.AskQuestionOutput
+    - kind: InvokeAzureAgent
+      id: get_answer_step
+      agent:
+        name: get-answer
+      conversationId: =System.ConversationId
+      input:
+        messages: =Local.AskQuestionOutput
+      output:
+        autoSend: true
+    - kind: EndConversation
+      id: end_conversation

@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 import requests
-from azure.identity import DefaultAzureCredential
+from azure.identity import AzureCliCredential
 
 
 class WorkshopConstants:
@@ -114,6 +114,16 @@ def run_az(command_args: list[str], expect_json: bool = False) -> Any:
     return run_command(full_command, expect_json=expect_json)
 
 
+def _has_cognitiveservices_commands() -> bool:
+    probe = subprocess.run(
+        ["az", "cognitiveservices", "account", "list", "-h"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    return probe.returncode == 0
+
+
 def _resolve_account_show() -> dict[str, Any]:
     return run_az(["account", "show"], expect_json=True)
 
@@ -139,10 +149,31 @@ def _project_name_from_endpoint(project_endpoint: str) -> str:
     return project_endpoint.split("/api/projects/")[-1].strip("/")
 
 
+def _resolve_override_or_env(
+    overrides: dict[str, str],
+    override_key: str,
+    env_key: str,
+    default_value: str = "",
+) -> str:
+    override_value = overrides.get(override_key)
+    if override_value is not None and override_value.strip():
+        return override_value.strip()
+
+    env_value = os.getenv(env_key, "")
+    if env_value.strip():
+        return env_value.strip()
+
+    return default_value
+
+
 def build_workshop_config(overrides: dict[str, str] | None = None) -> WorkshopConfig:
     override_values = overrides or {}
 
-    resource_group_name = override_values.get("resource_group_name") or os.getenv(WorkshopConstants.ENV_RESOURCE_GROUP_NAME, "")
+    resource_group_name = _resolve_override_or_env(
+        override_values,
+        "resource_group_name",
+        WorkshopConstants.ENV_RESOURCE_GROUP_NAME,
+    )
     if not resource_group_name:
         raise ValueError(
             "Missing RESOURCE_GROUP_NAME. Set the environment variable or pass {'resource_group_name': '<name>'}."
@@ -152,60 +183,70 @@ def build_workshop_config(overrides: dict[str, str] | None = None) -> WorkshopCo
     group = _resolve_group_show(resource_group_name)
     names_by_type = _resolve_resource_names(resource_group_name)
 
-    subscription_id = (
-        override_values.get("subscription_id")
-        or os.getenv(WorkshopConstants.ENV_SUBSCRIPTION_ID, "")
-        or account.get("id", "")
+    subscription_id = _resolve_override_or_env(
+        override_values,
+        "subscription_id",
+        WorkshopConstants.ENV_SUBSCRIPTION_ID,
+        str(account.get("id", "") or ""),
     )
 
-    location = (
-        override_values.get("location")
-        or os.getenv(WorkshopConstants.ENV_LOCATION, "")
-        or group.get("location", "")
+    location = _resolve_override_or_env(
+        override_values,
+        "location",
+        WorkshopConstants.ENV_LOCATION,
+        str(group.get("location", "") or ""),
     )
 
-    storage_account_name = (
-        override_values.get("storage_account_name")
-        or os.getenv(WorkshopConstants.ENV_STORAGE_ACCOUNT_NAME, "")
-        or names_by_type.get(WorkshopConstants.RESOURCE_TYPE_STORAGE, "")
+    storage_account_name = _resolve_override_or_env(
+        override_values,
+        "storage_account_name",
+        WorkshopConstants.ENV_STORAGE_ACCOUNT_NAME,
+        names_by_type.get(WorkshopConstants.RESOURCE_TYPE_STORAGE, ""),
     )
 
-    search_service_name = (
-        override_values.get("search_service_name")
-        or os.getenv(WorkshopConstants.ENV_SEARCH_SERVICE_NAME, "")
-        or names_by_type.get(WorkshopConstants.RESOURCE_TYPE_SEARCH, "")
+    search_service_name = _resolve_override_or_env(
+        override_values,
+        "search_service_name",
+        WorkshopConstants.ENV_SEARCH_SERVICE_NAME,
+        names_by_type.get(WorkshopConstants.RESOURCE_TYPE_SEARCH, ""),
     )
 
-    search_api_key = (
-        override_values.get("search_api_key")
-        or os.getenv(WorkshopConstants.ENV_SEARCH_API_KEY, "")
+    search_api_key = _resolve_override_or_env(
+        override_values,
+        "search_api_key",
+        WorkshopConstants.ENV_SEARCH_API_KEY,
     )
 
-    application_insights_name = (
-        override_values.get("application_insights_name")
-        or os.getenv(WorkshopConstants.ENV_APPLICATION_INSIGHTS_NAME, "")
-        or names_by_type.get(WorkshopConstants.RESOURCE_TYPE_APP_INSIGHTS, "")
+    application_insights_name = _resolve_override_or_env(
+        override_values,
+        "application_insights_name",
+        WorkshopConstants.ENV_APPLICATION_INSIGHTS_NAME,
+        names_by_type.get(WorkshopConstants.RESOURCE_TYPE_APP_INSIGHTS, ""),
     )
 
-    foundry_account_name = (
-        override_values.get("foundry_account_name")
-        or os.getenv(WorkshopConstants.ENV_FOUNDRY_ACCOUNT_NAME, "")
-        or names_by_type.get(WorkshopConstants.RESOURCE_TYPE_COG_SERVICES, "")
+    foundry_account_name = _resolve_override_or_env(
+        override_values,
+        "foundry_account_name",
+        WorkshopConstants.ENV_FOUNDRY_ACCOUNT_NAME,
+        names_by_type.get(WorkshopConstants.RESOURCE_TYPE_COG_SERVICES, ""),
     )
 
-    foundry_project_endpoint = (
-        override_values.get("foundry_project_endpoint")
-        or os.getenv(WorkshopConstants.ENV_FOUNDRY_PROJECT_ENDPOINT, "")
+    foundry_project_endpoint = _resolve_override_or_env(
+        override_values,
+        "foundry_project_endpoint",
+        WorkshopConstants.ENV_FOUNDRY_PROJECT_ENDPOINT,
     )
 
-    foundry_project_api_key = (
-        override_values.get("foundry_project_api_key")
-        or os.getenv(WorkshopConstants.ENV_FOUNDRY_PROJECT_API_KEY, "")
+    foundry_project_api_key = _resolve_override_or_env(
+        override_values,
+        "foundry_project_api_key",
+        WorkshopConstants.ENV_FOUNDRY_PROJECT_API_KEY,
     )
 
-    foundry_project_name = (
-        override_values.get("foundry_project_name")
-        or os.getenv(WorkshopConstants.ENV_FOUNDRY_PROJECT_NAME, "")
+    foundry_project_name = _resolve_override_or_env(
+        override_values,
+        "foundry_project_name",
+        WorkshopConstants.ENV_FOUNDRY_PROJECT_NAME,
     )
 
     if not foundry_project_name and foundry_project_endpoint:
@@ -216,10 +257,12 @@ def build_workshop_config(overrides: dict[str, str] | None = None) -> WorkshopCo
             f"https://{foundry_account_name}.services.ai.azure.com/api/projects/{foundry_project_name}"
         )
 
-    model_zone = (
-        override_values.get("model_zone")
-        or os.getenv(WorkshopConstants.ENV_MODEL_ZONE, WorkshopConstants.MODEL_ZONE_GLOBAL)
-    ).strip().lower()
+    model_zone = _resolve_override_or_env(
+        override_values,
+        "model_zone",
+        WorkshopConstants.ENV_MODEL_ZONE,
+        WorkshopConstants.MODEL_ZONE_GLOBAL,
+    ).lower()
 
     if model_zone not in WorkshopConstants.MODEL_SKU_BY_ZONE:
         allowed_values = ", ".join(WorkshopConstants.MODEL_SKU_BY_ZONE.keys())
@@ -242,7 +285,23 @@ def build_workshop_config(overrides: dict[str, str] | None = None) -> WorkshopCo
 
 
 def ensure_cognitiveservices_extension() -> None:
-    run_az(["extension", "add", "--name", "cognitiveservices", "--upgrade"])
+    if _has_cognitiveservices_commands():
+        return
+
+    try:
+        run_az(["extension", "add", "--name", "cognitiveservices", "--upgrade"])
+    except subprocess.CalledProcessError as exc:
+        # Some Azure CLI distributions have cognitiveservices built in and no installable extension.
+        if _has_cognitiveservices_commands():
+            return
+
+        stderr = (exc.stderr or "").strip()
+        if "No extension found with name 'cognitiveservices'" in stderr:
+            raise RuntimeError(
+                "Azure CLI command group 'cognitiveservices' is unavailable and the extension cannot be installed. "
+                "Update Azure CLI or use a distribution that includes cognitiveservices commands."
+            ) from exc
+        raise
 
 
 def get_available_models(config: WorkshopConfig) -> list[dict[str, Any]]:
@@ -421,7 +480,7 @@ class SearchRestClient:
                 "Content-Type": "application/json",
             }
         else:
-            token = DefaultAzureCredential().get_token(WorkshopConstants.SEARCH_SCOPE).token
+            token = AzureCliCredential().get_token(WorkshopConstants.SEARCH_SCOPE).token
             self.headers = {
                 "Authorization": f"Bearer {token}",
                 "Content-Type": "application/json",
@@ -430,13 +489,37 @@ class SearchRestClient:
     def put(self, path: str, payload: dict[str, Any]) -> None:
         url = f"{self.endpoint}/{path}?api-version={WorkshopConstants.SEARCH_API_VERSION}"
         response = requests.put(url, headers=self.headers, json=payload, timeout=WorkshopConstants.DEFAULT_TIMEOUT_SECONDS)
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except requests.HTTPError as exc:
+            detail = self._format_error_response(response)
+            raise requests.HTTPError(f"{exc}\nSearch API error details: {detail}", response=response) from exc
 
     def post(self, path: str, payload: dict[str, Any]) -> dict[str, Any]:
         url = f"{self.endpoint}/{path}?api-version={WorkshopConstants.SEARCH_API_VERSION}"
         response = requests.post(url, headers=self.headers, json=payload, timeout=WorkshopConstants.DEFAULT_TIMEOUT_SECONDS)
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except requests.HTTPError as exc:
+            detail = self._format_error_response(response)
+            raise requests.HTTPError(f"{exc}\nSearch API error details: {detail}", response=response) from exc
         return response.json() if response.content else {}
+
+    @staticmethod
+    def _format_error_response(response: requests.Response) -> str:
+        try:
+            payload = response.json()
+        except ValueError:
+            text = response.text.strip()
+            return text if text else "<empty response body>"
+
+        if isinstance(payload, dict):
+            message = payload.get("error", {}).get("message")
+            if message:
+                return str(message)
+            return json.dumps(payload, indent=2)
+
+        return str(payload)
 
 
 def build_search_client(config: WorkshopConfig) -> SearchRestClient:
@@ -459,7 +542,7 @@ def build_project_client(config: WorkshopConfig) -> Any:
 
     return AIProjectClient(
         endpoint=config.foundry_project_endpoint,
-        credential=DefaultAzureCredential(),
+        credential=AzureCliCredential(),
     )
 
 
@@ -514,7 +597,22 @@ def create_knowledge_base(
     azure_openai_resource_uri: str,
     chat_deployment_name: str,
     chat_model_name: str,
+    azure_openai_api_key: str = "",
 ) -> None:
+    normalized_chat_model_name = re.sub(
+        r"^gpt-(\d+)-(\d+)(.*)$",
+        r"gpt-\1.\2\3",
+        chat_model_name.strip().lower(),
+    )
+
+    azure_openai_parameters: dict[str, Any] = {
+        "resourceUri": azure_openai_resource_uri.rstrip("/"),
+        "deploymentId": chat_deployment_name,
+        "modelName": normalized_chat_model_name,
+    }
+    if azure_openai_api_key.strip():
+        azure_openai_parameters["apiKey"] = azure_openai_api_key.strip()
+
     body = {
         "name": knowledge_base_name,
         "description": "Coffee workshop Foundry IQ knowledge base.",
@@ -524,11 +622,7 @@ def create_knowledge_base(
         "models": [
             {
                 "kind": "azureOpenAI",
-                "azureOpenAIParameters": {
-                    "resourceUri": azure_openai_resource_uri.rstrip("/"),
-                    "deploymentId": chat_deployment_name,
-                    "modelName": chat_model_name,
-                },
+                "azureOpenAIParameters": azure_openai_parameters,
             }
         ],
     }

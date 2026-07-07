@@ -97,11 +97,44 @@ get_search_identity() {
     -o tsv
 }
 
+get_signed_in_principal_identity() {
+  local account_type
+  local account_name
+  local principal_id
+  local principal_type
+
+  account_type="$(az account show --query user.type -o tsv)"
+  account_name="$(az account show --query user.name -o tsv)"
+
+  case "$account_type" in
+    user)
+      principal_id="$(az ad signed-in-user show --query id -o tsv)"
+      principal_type="User"
+      ;;
+    servicePrincipal)
+      principal_id="$(az ad sp show --id "$account_name" --query id -o tsv)"
+      principal_type="ServicePrincipal"
+      ;;
+    *)
+      echo "Unsupported signed-in account type '$account_type'. Expected user or servicePrincipal." >&2
+      exit 1
+      ;;
+  esac
+
+  if [[ -z "$principal_id" ]]; then
+    echo "Unable to resolve signed-in principal object ID for '$account_name'." >&2
+    exit 1
+  fi
+
+  printf '%s|%s|%s' "$principal_id" "$principal_type" "$account_name"
+}
+
 assign_role_if_missing() {
   local principal_object_id="$1"
   local principal_label="$2"
-  local role_name="$3"
-  local scope="$4"
+  local principal_type="$3"
+  local role_name="$4"
+  local scope="$5"
 
   local existing
   existing="$(az role assignment list \
@@ -119,7 +152,7 @@ assign_role_if_missing() {
   echo "Assigning role: $principal_label -> $role_name"
   az role assignment create \
     --assignee-object-id "$principal_object_id" \
-    --assignee-principal-type ServicePrincipal \
+    --assignee-principal-type "$principal_type" \
     --role "$role_name" \
     --scope "$scope" \
     --output none
@@ -140,6 +173,10 @@ main() {
   local foundry_hub_principal_id
   local foundry_project_principal_id
   local search_principal_id
+  local signed_in_principal_id
+  local signed_in_principal_type
+  local signed_in_principal_name
+  local signed_in_principal_data
 
   local role_blob_contributor
   local role_cognitive_services_user
@@ -175,6 +212,9 @@ main() {
     exit 1
   fi
 
+  signed_in_principal_data="$(get_signed_in_principal_identity)"
+  IFS='|' read -r signed_in_principal_id signed_in_principal_type signed_in_principal_name <<<"$signed_in_principal_data"
+
   # Resolve role display names once so assignment works across minor naming differences.
   role_blob_contributor="$(resolve_role_name "Azure Blob Contributor" "Storage Blob Data Contributor" "Azure Blob Contributor")"
   role_cognitive_services_user="$(resolve_role_name "Cognitive services user" "Cognitive Services User")"
@@ -191,11 +231,12 @@ main() {
 
   local role_name
   for role_name in "${all_roles[@]}"; do
-    assign_role_if_missing "$foundry_hub_principal_id" "Foundry account: $foundry_account_name" "$role_name" "$scope"
-    assign_role_if_missing "$search_principal_id" "Search service: $search_service_name" "$role_name" "$scope"
+    assign_role_if_missing "$foundry_hub_principal_id" "Foundry account: $foundry_account_name" "ServicePrincipal" "$role_name" "$scope"
+    assign_role_if_missing "$search_principal_id" "Search service: $search_service_name" "ServicePrincipal" "$role_name" "$scope"
+    assign_role_if_missing "$signed_in_principal_id" "Signed-in principal: $signed_in_principal_name" "$signed_in_principal_type" "$role_name" "$scope"
 
     if [[ -n "$foundry_project_name" ]]; then
-      assign_role_if_missing "$foundry_project_principal_id" "Foundry project: $foundry_project_name" "$role_name" "$scope"
+      assign_role_if_missing "$foundry_project_principal_id" "Foundry project: $foundry_project_name" "ServicePrincipal" "$role_name" "$scope"
     fi
   done
 
@@ -204,6 +245,8 @@ main() {
   echo "Scope: $scope"
   echo "Foundry hub principal ID: $foundry_hub_principal_id"
   echo "Search principal ID: $search_principal_id"
+  echo "Signed-in principal ($signed_in_principal_type): $signed_in_principal_name"
+  echo "Signed-in principal ID: $signed_in_principal_id"
 
   if [[ -n "$foundry_project_name" ]]; then
     echo "Foundry project principal ID: $foundry_project_principal_id"

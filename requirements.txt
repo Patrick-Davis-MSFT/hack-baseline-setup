@@ -1,0 +1,8 @@
+azure-ai-projects
+azure-core
+azure-identity
+matplotlib
+pandas
+pypdf
+requests
+seaborn

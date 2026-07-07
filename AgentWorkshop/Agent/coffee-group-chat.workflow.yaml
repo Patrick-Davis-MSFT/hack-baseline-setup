@@ -1,0 +1,89 @@
+kind: workflow
+name: coffee-group-chat
+description: Group chat multi-agent workflow for coffee workshop
+trigger:
+  kind: OnConversationStart
+  id: trigger_wf
+  actions:
+    - kind: SetVariable
+      id: init_history
+      variable: Local.ConvoHistory
+      value: =System.LastMessage.Text
+    - kind: InvokeAzureAgent
+      id: orchestrator_step
+      agent:
+        name: Orchestrator-Agent
+      conversationId: =System.ConversationId
+      input:
+        messages: =Local.ConvoHistory
+      output:
+        autoSend: true
+        responseObject: Local.OrchestratorOutput
+        messages: Local.LastOrchestratorMessage
+    - kind: SetVariable
+      id: next_agent_name
+      variable: Local.NextAgentName
+      value: =Upper(Trim(Text(Local.OrchestratorOutput.'next-agent')))
+    - kind: ConditionGroup
+      id: route_group
+      conditions:
+        - id: route_data_agent
+          condition: =Local.NextAgentName = "DATA-ANALYST-AGENT"
+          actions:
+            - kind: InvokeAzureAgent
+              id: data_agent_step
+              agent:
+                name: Data-Analyst-Agent
+              conversationId: =System.ConversationId
+              input:
+                messages: =Local.LastOrchestratorMessage
+              output:
+                autoSend: true
+                messages: Local.ConvoHistory
+            - kind: GotoAction
+              id: goto_orchestrator_from_data
+              actionId: orchestrator_step
+        - id: route_research_agent
+          condition: =Local.NextAgentName = "RESEARCH-AGENT"
+          actions:
+            - kind: InvokeAzureAgent
+              id: research_agent_step
+              agent:
+                name: Research-Agent
+              conversationId: =System.ConversationId
+              input:
+                messages: =Local.LastOrchestratorMessage
+              output:
+                autoSend: true
+                messages: Local.ConvoHistory
+            - kind: GotoAction
+              id: goto_orchestrator_from_research
+              actionId: orchestrator_step
+        - id: route_recipe_agent
+          condition: =Local.NextAgentName = "RECIPE-AGENT"
+          actions:
+            - kind: InvokeAzureAgent
+              id: recipe_agent_step
+              agent:
+                name: Recipe-Agent
+              conversationId: =System.ConversationId
+              input:
+                messages: =Local.LastOrchestratorMessage
+              output:
+                autoSend: true
+                messages: Local.ConvoHistory
+            - kind: GotoAction
+              id: goto_orchestrator_from_recipe
+              actionId: orchestrator_step
+      elseActions:
+        - kind: InvokeAzureAgent
+          id: insights_step
+          agent:
+            name: Insights-Agent
+          conversationId: =System.ConversationId
+          input:
+            messages: =Local.LastOrchestratorMessage
+          output:
+            autoSend: true
+    - kind: EndConversation
+      id: end_conversation
